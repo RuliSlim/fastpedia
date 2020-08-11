@@ -1,6 +1,8 @@
 import 'package:fastpedia/model/user.dart';
 import 'package:fastpedia/screens/dashboard.dart';
+import 'package:fastpedia/screens/home.dart';
 import 'package:fastpedia/screens/login_screen.dart';
+import 'package:fastpedia/screens/profile.dart';
 import 'package:fastpedia/services/user_preferences.dart';
 import 'package:fastpedia/services/user_provider.dart';
 import 'package:fastpedia/services/web_services.dart';
@@ -19,7 +21,6 @@ class MyApp extends StatefulWidget {
   }
 }
 
-
 class _MyApp extends State<MyApp> {
   Future userFuture;
 
@@ -27,6 +28,13 @@ class _MyApp extends State<MyApp> {
   void initState() {
     super.initState();
     userFuture = getUserData();
+    userFuture.then((value) {
+      if (value.username == null) {
+        print('ini vaaal>>>>>>><<<<');
+      } else {
+        print('ini masuuuk njiiing');
+      }
+    });
   }
 
   Future<User> getUserData() => UserPreferences().getUser();
@@ -61,22 +69,20 @@ class _MyApp extends State<MyApp> {
                   else if (snapshot.data.token == null)
                     return LoginPage();
                   else
-//                    UserPreferences().removeUser();
-//                    Provider.of<UserProvider>(context, listen: false).setUser(snapshot.data.);
-                  return DashBoard();
+                  return HomePage();
               }
             }
         ),
         routes: {
           '/login': (context) => LoginPage(),
           '/dashboard': (context) => DashBoard(),
+          '/profile': (context) => Profile(),
+          '/home': (context) => HomePage()
         },
       ),
     );
   }
 }
-
-//TextEditingController
 
 class Responsive {
   static width(double p, BuildContext context) {
@@ -88,25 +94,5 @@ class Responsive {
   }
 }
 
-// welcome page
-class Welcome extends StatelessWidget {
-  final User user;
-
-  Welcome({Key key, @required this.user}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    Provider.of<UserProvider>(context).setUser(user);
-
-    return Scaffold(
-      body: Container(
-        child: Center(
-          child: Text("WELCOME yo}"),
-        ),
-      ),
-    );
-  }
-}
 
 

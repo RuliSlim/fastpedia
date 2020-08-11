@@ -69,17 +69,14 @@ class _LoginPage extends State<LoginPage> {
     var doLogin = () {
       final form = formKey.currentState;
 
-      print([_username, _password, "ini form nih"]);
-
       final Future<Map<String, dynamic>> successfulMessage =
       webService.signIn(username: _username, password: _password);
 
       successfulMessage.then((response) {
-        print([response, "ini response ansfnfa"]);
         if (response['status']) {
           User user = response['user'];
           Provider.of<UserProvider>(context, listen: false).setUser(user);
-          Navigator.pushReplacementNamed(context, '/dashboard');
+          Navigator.pushReplacementNamed(context, '/home');
         } else {
           Flushbar(
             title: "Failed Login",

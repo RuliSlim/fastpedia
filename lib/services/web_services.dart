@@ -29,6 +29,7 @@ class WebService with ChangeNotifier {
 
   Future<Map<String, dynamic>> signIn({String username, String password}) async {
     var result;
+    bool isError = false;
 
     final Map<String, dynamic> logInData = {
       'username': username,
@@ -38,10 +39,6 @@ class WebService with ChangeNotifier {
     _loggedInStatus = Status.Authenticating;
     notifyListeners();
 
-//      Map dataJson = {
-//        'username': username,
-//        'password': password
-//      };
     print([logInData, "sfusahfusa"]);
     final response = await dio.post(
       loginUrl,
@@ -51,12 +48,16 @@ class WebService with ChangeNotifier {
           'Content-Type': 'application/json'
         },
       ),
-    );
-    print([response.statusCode, "ini response"]);
-    print(response);
+    ).catchError((onError) {
+      isError = true;
+      print([onError, 'sajfnsaljfjsaf']);
+    });
+    print([response, "ini response"]);
+//    print(response.data);
+//    print(response.data);
 
     // ignore: unrelated_type_equality_checks
-    if (response.data == 400) {
+    if (isError) {
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
       result = {'status': false, 'message': 'username or password invalid'};
@@ -71,7 +72,6 @@ class WebService with ChangeNotifier {
       result = {'status': true, 'message': 'Successful', 'user': user};
     }
 
-    print(result);
     return result;
   }
 }

@@ -102,9 +102,7 @@ class _WatchVideoState extends State<WatchVideo> {
               _inAppWebViewController = controller;
             },
             onLoadStop: (InAppWebViewController controller, String url) {
-              controller.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[2].style.display="none";');
-              controller.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[3].style.display="none";');
-              controller.evaluateJavascript(source: 'document.querySelectorAll(".mobile-topbar-header.cbox")[0].style.display="none";');
+              modifyDom();
               setState(() {
                 isDoneLoadWeb = true;
               });
@@ -187,6 +185,17 @@ class _WatchVideoState extends State<WatchVideo> {
         //_myController.loadUrl(urlVideo);
         _inAppWebViewController.loadUrl(url: urlVideo);
       },
+    );
+  }
+
+  // method
+  void modifyDom() {
+    _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[2].style.display="none";');
+    _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[3].style.display="none";');
+    _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".mobile-topbar-header.cbox")[0].style.display="none";');
+    _inAppWebViewController.evaluateJavascript(source: 'var parent = document.getElementsByTagName("ytm-slim-owner-renderer")[0]; '
+        'var child = parent.getElementsByTagName("a"); '
+        'child[0].removeAttribute("href");'
     );
   }
 }

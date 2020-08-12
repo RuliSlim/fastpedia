@@ -46,7 +46,7 @@ class _WatchVideoState extends State<WatchVideo> {
 
   // countdown timer;
   Timer _timerCheck;
-  int _time = 300;
+  int _time = 10;
   bool isDoneLoadWeb = false;
   bool isPlayingVideo = false;
 
@@ -76,7 +76,7 @@ class _WatchVideoState extends State<WatchVideo> {
   @override
   void initState() {
     super.initState();
-    checkIfPlay();
+    //checkIfPlay();
   }
 
   @override
@@ -108,6 +108,7 @@ class _WatchVideoState extends State<WatchVideo> {
               setState(() {
                 isDoneLoadWeb = true;
               });
+              checkIfPlay();
             },
           ),
         ),
@@ -124,7 +125,7 @@ class _WatchVideoState extends State<WatchVideo> {
     if (_time > 0) {
       return _countDown();
     }
-    if (isDone && _time == 0) {
+    if (isDone && _time < 1) {
       return _nextVideoButton();
     } else {
       return _subsAction();
@@ -180,7 +181,9 @@ class _WatchVideoState extends State<WatchVideo> {
         setState(() {
           urlVideo = 'https://m.youtube.com/watch?v=H5-e6M7SjL8';
           isDone = false;
+          _time = 10;
         });
+        _timerCheck.cancel();
         //_myController.loadUrl(urlVideo);
         _inAppWebViewController.loadUrl(url: urlVideo);
       },

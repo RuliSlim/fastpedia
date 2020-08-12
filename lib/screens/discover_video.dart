@@ -44,58 +44,43 @@ class _WatchVideoState extends State<WatchVideo> {
     return data;
   }
 
-  Timer _timer;
-  int _time = 3;
+  // countdown timer;
+  Timer _timerCheck;
+  int _time = 300;
+  bool isDoneLoadWeb = false;
+  bool isPlayingVideo = false;
 
   void countDown() {
-    const oneSec = Duration(seconds: 1);
-    _timer = new Timer.periodic(oneSec, (Timer timer) {
+    if (isPlayingVideo && _timerCheck.isActive) {
       setState(() {
-        if (_time < 1) {
-          timer.cancel();
-        } else {
-          _time -= 1;
-        }
+        _time -= 1;
       });
+    }
+  }
+
+  void checkIfPlay() {
+    const oneSec = Duration(seconds: 1);
+    _timerCheck = new Timer.periodic(oneSec, (timer) {
+      if (isDoneLoadWeb) {
+        var player = _inAppWebViewController.evaluateJavascript(source: 'document.getElementById("movie_player").classList.contains("playing-mode");');
+        player.then((value) {
+          setState(() {
+            isPlayingVideo = value;
+          });
+          countDown();
+        });
+      }
     });
   }
 
   @override
   void initState() {
     super.initState();
-    userFuture = getUserData();
+    checkIfPlay();
   }
-
 
   @override
   Widget build(BuildContext context) {
-    /*final webView = Stack(
-      children: <Widget>[
-        Positioned(
-          top: -Responsive.height(6, context),
-          height: Responsive.height(100, context),
-          width: Responsive.width(100, context),
-          child: WebView(
-            initialUrl: urlVideo,
-            javascriptMode: JavascriptMode.unrestricted,
-            initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-            gestureNavigationEnabled: true,
-            onWebViewCreated: (WebViewController webViewController) {
-              _controller.complete(webViewController);
-              _myController = webViewController;
-            },
-            onPageFinished: (url) {
-              _myController.evaluateJavascript('document.querySelectorAll(".scwnr-content")[2].style.display="none";');
-              _myController.evaluateJavascript('document.querySelectorAll(".scwnr-content")[3].style.display="none";');
-              _myController.evaluateJavascript('document.querySelectorAll(".mobile-topbar-header.cbox")[0].style.display="none";');
-              countDown();
-            },
-          ),
-        ),
-      ],
-    );
-     */
-
     // inappwebvie
     Stack inAppwebView = Stack(
       children: <Widget>[
@@ -105,12 +90,12 @@ class _WatchVideoState extends State<WatchVideo> {
           width: Responsive.width(100, context),
           child: InAppWebView(
             initialUrl: urlVideo,
-
             initialOptions: InAppWebViewGroupOptions(
                 crossPlatform: InAppWebViewOptions(
-                  debuggingEnabled: false,
-                  mediaPlaybackRequiresUserGesture: false,
-                  javaScriptEnabled: true,
+                    debuggingEnabled: false,
+                    mediaPlaybackRequiresUserGesture: false,
+                    javaScriptEnabled: true,
+                    useShouldInterceptAjaxRequest: true
                 )
             ),
             onWebViewCreated: (InAppWebViewController controller) {
@@ -120,7 +105,9 @@ class _WatchVideoState extends State<WatchVideo> {
               controller.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[2].style.display="none";');
               controller.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[3].style.display="none";');
               controller.evaluateJavascript(source: 'document.querySelectorAll(".mobile-topbar-header.cbox")[0].style.display="none";');
-              countDown();
+              setState(() {
+                isDoneLoadWeb = true;
+              });
             },
           ),
         ),
@@ -128,16 +115,7 @@ class _WatchVideoState extends State<WatchVideo> {
     );
 
     return Scaffold(
-      body: FutureBuilder(
-        future: userFuture,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return inAppwebView;
-          } else {
-            return Text('ga ada data');
-          }
-        },
-      ),
+      body: inAppwebView,
       floatingActionButton: _containerButton(),
     );
   }
@@ -171,7 +149,7 @@ class _WatchVideoState extends State<WatchVideo> {
       onPressed: () async {
         var hasil = getDom();
         hasil.then((value) {
-          if (isSubscribe.length == 13) {
+          if (isSubscribe.length == 10) {
             Flushbar(
               title: 'Failed!',
               message: 'You Have To Subscribe!',

@@ -1,6 +1,6 @@
 import 'package:fastpedia/components/tab_bar.dart';
 import 'package:fastpedia/model/user.dart';
-import 'package:fastpedia/screens/dashboard.dart';
+import 'package:fastpedia/screens/discover_video.dart';
 import 'package:fastpedia/services/user_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -4,26 +4,23 @@ import 'package:fastpedia/model/user.dart';
 import 'package:fastpedia/services/user_preferences.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'dart:async';
 import 'package:webview_flutter/webview_flutter.dart';
 
 
 // Dashboard
-class DashBoard extends StatefulWidget {
+class WatchVideo extends StatefulWidget {
   final VoidCallback onTimeAndSubSuccess;
   final VoidCallback onNextVideo;
 
-  DashBoard({Key key, this.onTimeAndSubSuccess, this.onNextVideo}) : super(key: key);
-
-//  final String text;
-//  final customFunction;
-//  MyChildExample({Key key, this.text, this.customFunction}) : super(key: key);
+  WatchVideo({Key key, this.onTimeAndSubSuccess, this.onNextVideo}) : super(key: key);
 
   @override
-  _DashBoardState createState() => _DashBoardState();
+  _WatchVideoState createState() => _WatchVideoState();
 }
 
-class _DashBoardState extends State<DashBoard> {
+class _WatchVideoState extends State<WatchVideo> {
   // States
   Future userFuture;
   Future<User> getUserData() => UserPreferences().getUser();
@@ -34,10 +31,13 @@ class _DashBoardState extends State<DashBoard> {
   final Completer<WebViewController> _controller = Completer<WebViewController>();
   WebViewController _myController;
 
+  // appWebViewControoler
+  InAppWebViewController _inAppWebViewController;
+
   // dataDom
   String isSubscribe;
   Future<String> getDom () async {
-    String data = await _myController.evaluateJavascript("document.querySelectorAll(\"button.c3-material-button-button\")[5].innerText");
+    String data = await _inAppWebViewController.evaluateJavascript(source: "document.querySelectorAll(\"button.c3-material-button-button\")[5].innerText");
     setState(() {
       isSubscribe = data;
     });
@@ -69,8 +69,7 @@ class _DashBoardState extends State<DashBoard> {
 
   @override
   Widget build(BuildContext context) {
-
-    final webView = Stack(
+    /*final webView = Stack(
       children: <Widget>[
         Positioned(
           top: -Responsive.height(6, context),
@@ -95,13 +94,45 @@ class _DashBoardState extends State<DashBoard> {
         ),
       ],
     );
+     */
+
+    // inappwebvie
+    Stack inAppwebView = Stack(
+      children: <Widget>[
+        Positioned(
+          top: -Responsive.height(6, context),
+          height: Responsive.height(100, context),
+          width: Responsive.width(100, context),
+          child: InAppWebView(
+            initialUrl: urlVideo,
+
+            initialOptions: InAppWebViewGroupOptions(
+                crossPlatform: InAppWebViewOptions(
+                  debuggingEnabled: false,
+                  mediaPlaybackRequiresUserGesture: false,
+                  javaScriptEnabled: true,
+                )
+            ),
+            onWebViewCreated: (InAppWebViewController controller) {
+              _inAppWebViewController = controller;
+            },
+            onLoadStop: (InAppWebViewController controller, String url) {
+              controller.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[2].style.display="none";');
+              controller.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[3].style.display="none";');
+              controller.evaluateJavascript(source: 'document.querySelectorAll(".mobile-topbar-header.cbox")[0].style.display="none";');
+              countDown();
+            },
+          ),
+        ),
+      ],
+    );
 
     return Scaffold(
       body: FutureBuilder(
         future: userFuture,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return webView;
+            return inAppwebView;
           } else {
             return Text('ga ada data');
           }
@@ -172,7 +203,8 @@ class _DashBoardState extends State<DashBoard> {
           urlVideo = 'https://m.youtube.com/watch?v=H5-e6M7SjL8';
           isDone = false;
         });
-        _myController.loadUrl(urlVideo);
+        //_myController.loadUrl(urlVideo);
+        _inAppWebViewController.loadUrl(url: urlVideo);
       },
     );
   }

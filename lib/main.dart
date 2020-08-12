@@ -1,5 +1,5 @@
 import 'package:fastpedia/model/user.dart';
-import 'package:fastpedia/screens/dashboard.dart';
+import 'package:fastpedia/screens/discover_video.dart';
 import 'package:fastpedia/screens/home.dart';
 import 'package:fastpedia/screens/login_screen.dart';
 import 'package:fastpedia/screens/profile.dart';
@@ -75,7 +75,7 @@ class _MyApp extends State<MyApp> {
         ),
         routes: {
           '/login': (context) => LoginPage(),
-          '/dashboard': (context) => DashBoard(),
+          '/dashboard': (context) => WatchVideo(),
           '/profile': (context) => Profile(),
           '/home': (context) => HomePage()
         },

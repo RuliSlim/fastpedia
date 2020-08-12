@@ -1,5 +1,6 @@
-import 'package:fastpedia/screens/dashboard.dart';
+import 'package:fastpedia/screens/discover_video.dart';
 import 'package:fastpedia/screens/profile.dart';
+import 'package:fastpedia/screens/qr_scanner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_tab_bar/MotionTabBarView.dart';
@@ -20,8 +21,8 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
   @override
   void initState() {
     super.initState();
-    _myTabController = MotionTabController(initialIndex: 1, vsync: this);
-    _myTabController.length = 2;
+    _myTabController = MotionTabController(initialIndex: 2, vsync: this);
+    _myTabController.length = 3;
   }
 
   @override
@@ -59,17 +60,17 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
     );
 
     MotionTabBar myMotionTabBar = MotionTabBar(
-      labels: [ 'Discover', 'Profile' ],
+      labels: [ 'Discover', 'QR', 'Profile' ],
       tabSelectedColor: Colors.green,
       tabIconColor: Colors.red,
       initialSelectedTab: tabSelected,
       textStyle: TextStyle(color: Colors.amberAccent),
       onTabItemSelected: (int value) {
-        print([value, '<<<<<<<<<<<<SAFSFAFFSDS>>>>>.']);
         onPressedTabBar(value);
       },
       icons: [
         Icons.youtube_searched_for,
+        Icons.scanner,
         Icons.person
       ],
     );
@@ -104,7 +105,10 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
         controller: _myTabController,
         children: <Widget>[
           Container(
-            child: DashBoard(onTimeAndSubSuccess: onTimeAndSubSuccess, onNextVideo: onNextVideo)
+            child: WatchVideo(onTimeAndSubSuccess: onTimeAndSubSuccess, onNextVideo: onNextVideo)
+          ),
+          Container(
+            child: ScreenScanner(),
           ),
           Container(
             child: Profile(),

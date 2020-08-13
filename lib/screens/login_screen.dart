@@ -228,16 +228,10 @@ class _LoginPage extends State<LoginPage> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         textLoginOrRegister,
+        usernameField,
+        passwordField,
         Padding(
-          padding: EdgeInsets.all(5.0),
-          child: usernameField,
-        ),
-        Padding(
-          padding: EdgeInsets.all(5),
-          child: passwordField,
-        ),
-        Padding(
-          padding: EdgeInsets.all(5),
+          padding: EdgeInsets.only(top: 10.0),
           child: buttonSignInOrSignUp,
         )
       ],

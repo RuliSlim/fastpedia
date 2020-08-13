@@ -22,6 +22,7 @@ class _LoginPage extends State<LoginPage> {
   // states
   bool isLogin = true;
   bool isActive = false;
+  bool isLoging = false;
 
   // check if text fields is active
   FocusNode _focusUsername = new FocusNode();
@@ -54,6 +55,38 @@ class _LoginPage extends State<LoginPage> {
   Widget build(BuildContext context) {
     WebService webService = Provider.of<WebService>(context);
 
+    // methods
+    // Login function when pressed
+    var doLogin = () {
+      final form = formKey.currentState;
+      setState(() {
+        isLoging = true;
+      });
+
+      final Future<Map<String, dynamic>> successfulMessage =
+      webService.signIn(username: _username, password: _password);
+
+      successfulMessage.then((response) {
+        if (response['status']) {
+          setState(() {
+            isLoging = false;
+          });
+          User user = response['user'];
+          Provider.of<UserProvider>(context, listen: false).setUser(user);
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          setState(() {
+            isLoging = false;
+          });
+          Flushbar(
+            title: "Failed Login",
+            message: response['message'].toString(),
+            duration: Duration(seconds: 3),
+          ).show(context);
+        }
+      });
+    };
+
     final usernameField = Container(
         width: Responsive.width(80, context),
         child: TextFormField(
@@ -61,8 +94,15 @@ class _LoginPage extends State<LoginPage> {
           obscureText: false,
           autofocus: false,
           autocorrect: false,
-          onSaved: (value) => _username = value,
-          onChanged: (value) => _username = value,
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.next,
+          textCapitalization: TextCapitalization.characters,
+          onSaved: (value) => _username = value.toUpperCase(),
+          onChanged: (value) => _username = value.toUpperCase(),
+          onFieldSubmitted: (term) {
+            _focusUsername.unfocus();
+            FocusScope.of(context).requestFocus(_focusPassword);
+          },
           decoration: InputDecoration(
             prefixIcon: Icon(Icons.person_outline),
             labelText: 'username',
@@ -75,11 +115,16 @@ class _LoginPage extends State<LoginPage> {
       width: Responsive.width(80, context),
       child: TextFormField(
         focusNode: _focusPassword,
-        obscureText: false,
+        textInputAction: TextInputAction.done,
+        obscureText: true,
         autofocus: false,
         autocorrect: false,
         onSaved: (value) => _password = value,
         onChanged: (value) => _password = value,
+        onFieldSubmitted: (term) {
+          _focusPassword.unfocus();
+          doLogin();
+        },
         decoration: InputDecoration(
           prefixIcon: Icon(Icons.lock),
           labelText: 'password',
@@ -88,36 +133,15 @@ class _LoginPage extends State<LoginPage> {
       ),
     );
 
-    var loading = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Text('Authenticating ... Please Wait')
-      ],
+    var loading = Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            CircularProgressIndicator(),
+            Text('Authenticating ... Please Wait')
+          ],
+        )
     );
-
-
-    // Login function when pressed
-    var doLogin = () {
-      final form = formKey.currentState;
-
-      final Future<Map<String, dynamic>> successfulMessage =
-      webService.signIn(username: _username, password: _password);
-
-      successfulMessage.then((response) {
-        if (response['status']) {
-          User user = response['user'];
-          Provider.of<UserProvider>(context, listen: false).setUser(user);
-          Navigator.pushReplacementNamed(context, '/home');
-        } else {
-          Flushbar(
-            title: "Failed Login",
-            message: response['message'].toString(),
-            duration: Duration(seconds: 3),
-          ).show(context);
-        }
-      });
-    };
 
     Column loginStandard = Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -140,11 +164,6 @@ class _LoginPage extends State<LoginPage> {
             height: Responsive.height(5, context),
             child:
             usernameField
-//            TextField(
-//              obscureText: false,
-//              decoration: InputDecoration(labelText: 'username'),
-//              controller: usernameController,
-//            ),
         ),
         Container(
             width: Responsive.width(80, context),
@@ -171,7 +190,6 @@ class _LoginPage extends State<LoginPage> {
     );
 
     // ModernDesign
-
     Row textLoginOrRegister = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -267,11 +285,10 @@ class _LoginPage extends State<LoginPage> {
       ],
     );
 
-
     return Scaffold(
         resizeToAvoidBottomInset: false,
         resizeToAvoidBottomPadding: false,
-        body: modernDesign
+        body: isLoging ? loading : modernDesign
     );
   }
 }

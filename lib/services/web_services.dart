@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:fastpedia/model/customError.dart';
 import 'package:fastpedia/model/user.dart';
 import 'package:fastpedia/services/user_preferences.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,10 +50,12 @@ class WebService with ChangeNotifier {
     ).catchError((onError) {
       isError = true;
       print([onError, 'sajfnsaljfjsaf']);
+      _loggedInStatus = Status.NotLoggedIn;
+      notifyListeners();
+      result = {'status': false, 'message': 'username or password invalid'};
+      return result;
     });
     print([response, "ini response"]);
-//    print(response.data);
-//    print(response.data);
 
     // ignore: unrelated_type_equality_checks
     if (isError) {

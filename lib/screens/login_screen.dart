@@ -27,12 +27,23 @@ class _LoginPage extends State<LoginPage> {
   // check if text fields is active
   FocusNode _focusUsername = new FocusNode();
   FocusNode _focusPassword = new FocusNode();
+  // focus node register
+  FocusNode _focusName = new FocusNode();
+  FocusNode _focusEmail = new FocusNode();
+  FocusNode _focusNIK = new FocusNode();
+  FocusNode _focusHP = new FocusNode();
 
   @override
   void initState() {
     super.initState();
     _focusUsername.addListener(_onFocusChange);
     _focusPassword.addListener(_onFocusChange);
+
+    // register components focus
+    _focusName.addListener(_onFocusChange);
+    _focusEmail.addListener(_onFocusChange);
+    _focusNIK.addListener(_onFocusChange);
+    _focusHP.addListener(_onFocusChange);
   }
 
   void _onFocusChange(){
@@ -87,6 +98,7 @@ class _LoginPage extends State<LoginPage> {
       });
     };
 
+    // fields everything
     final usernameField = Container(
         width: Responsive.width(80, context),
         child: TextFormField(
@@ -104,6 +116,14 @@ class _LoginPage extends State<LoginPage> {
             FocusScope.of(context).requestFocus(_focusPassword);
           },
           decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(
+                color: Colors.black,
+                width: 3,
+                style: BorderStyle.solid
+              )
+            ),
             prefixIcon: Icon(Icons.person_outline),
             labelText: 'username',
             contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
@@ -133,6 +153,15 @@ class _LoginPage extends State<LoginPage> {
       ),
     );
 
+    // register components
+    final nameField = Container(
+      width: Responsive.width(80, context),
+      child: TextFormField(
+        focusNode: _focusName,
+      )
+    );
+
+    // loading components
     var loading = Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -264,11 +293,19 @@ class _LoginPage extends State<LoginPage> {
       ],
     );
 
+    Column registerFields = Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        textLoginOrRegister,
+        Text('Register')
+      ],
+    );
+
     AnimatedContainer fields = AnimatedContainer(
       duration: Duration(milliseconds: 1500),
       curve: Curves.ease,
       height: isActive ? 550 : 200,
-      child: isActive ? loginOrRegister : loginOrRegisterNotActive,
+      child: isLogin ? isActive ? loginOrRegister : loginOrRegisterNotActive : registerFields,
       decoration: BoxDecoration(
           color: Colors.amberAccent,
           borderRadius: new BorderRadius.only(
@@ -285,10 +322,112 @@ class _LoginPage extends State<LoginPage> {
       ],
     );
 
+    // WIDGET BODY
     return Scaffold(
         resizeToAvoidBottomInset: false,
         resizeToAvoidBottomPadding: false,
         body: isLoging ? loading : modernDesign
+    );
+  }
+}
+
+class CustomTextFields extends StatefulWidget {
+  final TextInputAction textInputAction;
+  final String label;
+  final String hintText;
+  final Widget icon;
+  final bool secret;
+  final bool autoCorrect;
+  final Function onFiledSubmitted;
+  final Function onChanged;
+  final FocusNode focusNode;
+  final double width;
+  final TextEditingController controller;
+
+  const CustomTextFields({
+    @required
+    this.textInputAction,
+    this.label,
+    this.hintText,
+    this.icon,
+    this.secret,
+    this.autoCorrect,
+    this.onFiledSubmitted,
+    this.onChanged,
+    this.focusNode,
+    this.width,
+    this.controller
+  });
+
+  @override
+  _CustomTextFieldsState createState() => _CustomTextFieldsState();
+}
+
+/*
+final passwordField = Container(
+  width: Responsive.width(80, context),
+  child: TextFormField(
+    focusNode: _focusPassword,
+    textInputAction: TextInputAction.done,
+    obscureText: true,
+    autofocus: false,
+    autocorrect: false,
+    onSaved: (value) => _password = value,
+    onChanged: (value) => _password = value,
+    onFieldSubmitted: (term) {
+      _focusPassword.unfocus();
+      doLogin();
+    },
+    decoration: InputDecoration(
+      prefixIcon: Icon(Icons.lock),
+      labelText: 'password',
+      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+    ),
+  ),
+);
+ */
+
+class _CustomTextFieldsState extends State<CustomTextFields> {
+  double bottomToError = 12;
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      width: Responsive.width(widget.width, context),
+      child: TextFormField(
+        focusNode: widget.focusNode,
+        textInputAction: widget.textInputAction,
+        obscureText: widget.secret,
+        autocorrect: widget.autoCorrect,
+        onChanged: widget.onChanged,
+        onFieldSubmitted: widget.onFiledSubmitted,
+        controller: widget.controller,
+        decoration: InputDecoration(
+          prefixIcon: widget.icon,
+          labelText: widget.label,
+          border: new OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(
+              style: BorderStyle.none,
+              width: 0
+            ),
+          ),
+          focusedBorder: new OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(
+              style: BorderStyle.solid,
+              width: 3
+            )
+          ),
+          hintStyle: TextStyle(
+            color: Colors.green,
+            fontSize: 12,
+            fontWeight: FontWeight.w300,
+          ),
+          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          isDense: true,
+        ),
+      ),
     );
   }
 }

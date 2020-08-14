@@ -4,6 +4,7 @@ import 'package:fastpedia/services/user_provider.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:keyboard_attachable/keyboard_attachable.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 
@@ -239,7 +240,7 @@ class _LoginPage extends State<LoginPage> {
         ),
         Padding(
           padding: EdgeInsets.only(top: 20.0),
-          child: buttonSignInOrSignUp,
+          child: _isActive ? buttonSignInOrSignUp : null,
         )
       ],
     );
@@ -256,7 +257,7 @@ class _LoginPage extends State<LoginPage> {
           child: usernameField,
         ),
         Padding(
-          padding: EdgeInsets.only(top: 10.0),
+          padding: EdgeInsets.only(top: 10.0, bottom: 20.0),
           child: passwordField,
         )
       ],
@@ -273,8 +274,7 @@ class _LoginPage extends State<LoginPage> {
     AnimatedContainer fields = AnimatedContainer(
       duration: Duration(milliseconds: 1500),
       curve: Curves.ease,
-      height: _isActive ? 530 : 200,
-      child: _isLogin ? _isActive ? loginOrRegister : loginOrRegisterNotActive : registerFields,
+      child: _isLogin ? loginOrRegister : registerFields,
       decoration: BoxDecoration(
           color: Colors.amberAccent,
           borderRadius: new BorderRadius.only(
@@ -284,11 +284,16 @@ class _LoginPage extends State<LoginPage> {
       ),
     );
 
-    Column modernDesign = Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        fields,
-      ],
+    AnimatedPadding modernDesign = AnimatedPadding(
+      duration: Duration(seconds: 3),
+      padding: EdgeInsets.only(bottom: _isActive ? MediaQuery.of(context).viewInsets.bottom : 0),
+      curve: Curves.ease,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          fields,
+        ],
+      ),
     );
 
     // WIDGET BODY

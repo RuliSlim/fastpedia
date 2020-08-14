@@ -13,16 +13,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  final formKey = new GlobalKey<FormState>();
   String _username, _password;
+  bool _usernameValidation = false;
+  bool _passwordValidation = false;
 
   // states
-  bool isLogin = true;
-  bool isActive = false;
-  bool isLoging = false;
+  bool _isLogin = true;
+  bool _isActive = false;
+  bool _isLogging = false;
 
   // check if text fields is active
   FocusNode _focusUsername = new FocusNode();
@@ -36,6 +34,8 @@ class _LoginPage extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+
+    // focus comp
     _focusUsername.addListener(_onFocusChange);
     _focusPassword.addListener(_onFocusChange);
 
@@ -47,9 +47,8 @@ class _LoginPage extends State<LoginPage> {
   }
 
   void _onFocusChange(){
-    debugPrint("Focus: "+_focusUsername.hasFocus.toString());
     setState(() {
-      isActive = _focusPassword.hasFocus || _focusUsername.hasFocus ? true : false;
+      _isActive = _focusPassword.hasFocus || _focusUsername.hasFocus ? true : false;
     });
   }
 
@@ -57,8 +56,6 @@ class _LoginPage extends State<LoginPage> {
 
   @override
   void dispose() {
-    usernameController.dispose();
-    passwordController.dispose();
     super.dispose();
   }
 
@@ -69,9 +66,9 @@ class _LoginPage extends State<LoginPage> {
     // methods
     // Login function when pressed
     var doLogin = () {
-      final form = formKey.currentState;
       setState(() {
-        isLoging = true;
+        _isLogging = true;
+        _isActive = false;
       });
 
       final Future<Map<String, dynamic>> successfulMessage =
@@ -80,14 +77,14 @@ class _LoginPage extends State<LoginPage> {
       successfulMessage.then((response) {
         if (response['status']) {
           setState(() {
-            isLoging = false;
+            _isLogging = false;
           });
           User user = response['user'];
           Provider.of<UserProvider>(context, listen: false).setUser(user);
           Navigator.pushReplacementNamed(context, '/home');
         } else {
           setState(() {
-            isLoging = false;
+            _isLogging = false;
           });
           Flushbar(
             title: "Failed Login",
@@ -98,68 +95,61 @@ class _LoginPage extends State<LoginPage> {
       });
     };
 
+    // validation username and password
+    void validation ({String type, String value}) {
+      setState(() {
+        if (type == 'username') {
+          _username = value;
+          _usernameValidation = _username.length >= 6 ? false : true;
+        } else {
+          _password = value;
+          _passwordValidation = _password.length >= 8 ? false : true;
+          print(_passwordValidation);
+        }
+      });
+    }
+
     // fields everything
-    final usernameField = Container(
-        width: Responsive.width(80, context),
-        child: TextFormField(
-          focusNode: _focusUsername,
-          obscureText: false,
-          autofocus: false,
-          autocorrect: false,
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.next,
-          textCapitalization: TextCapitalization.characters,
-          onSaved: (value) => _username = value.toUpperCase(),
-          onChanged: (value) => _username = value.toUpperCase(),
-          onFieldSubmitted: (term) {
-            _focusUsername.unfocus();
-            FocusScope.of(context).requestFocus(_focusPassword);
-          },
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(
-                color: Colors.black,
-                width: 3,
-                style: BorderStyle.solid
-              )
-            ),
-            prefixIcon: Icon(Icons.person_outline),
-            labelText: 'username',
-            contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          ),
-        )
+    final usernameField = CustomTextFields(
+      textInputAction: TextInputAction.next,
+      secret: false,
+      hintText: 'Input your username',
+      icon: Icon(Icons.person),
+      width: 80,
+      label: 'username',
+      onChanged: (val) => validation(type: 'username', value: val),
+      focusNode: _focusUsername,
+      autoCorrect: false,
+      onFiledSubmitted: (val) {
+        _focusUsername.unfocus();
+        FocusScope.of(context).requestFocus(_focusPassword);
+      },
+      textCapitalization: TextCapitalization.characters,
+      keyboardType: TextInputType.text,
+      errorMessage: 'username at least 6 char',
+      isError: _usernameValidation,
     );
 
-    final passwordField = Container(
-      width: Responsive.width(80, context),
-      child: TextFormField(
-        focusNode: _focusPassword,
-        textInputAction: TextInputAction.done,
-        obscureText: true,
-        autofocus: false,
-        autocorrect: false,
-        onSaved: (value) => _password = value,
-        onChanged: (value) => _password = value,
-        onFieldSubmitted: (term) {
-          _focusPassword.unfocus();
-          doLogin();
-        },
-        decoration: InputDecoration(
-          prefixIcon: Icon(Icons.lock),
-          labelText: 'password',
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        ),
-      ),
+    final passwordField = CustomTextFields(
+      textInputAction: TextInputAction.done,
+      secret: true,
+      hintText: 'Input Your password',
+      icon: Icon(Icons.lock),
+      width: 80,
+      label: 'password',
+      onChanged: (val) => validation(type: 'password', value: val),
+      focusNode: _focusPassword,
+      autoCorrect: false,
+      onFiledSubmitted: (val) {
+        _focusPassword.unfocus();
+        doLogin();
+      },
+      textCapitalization: TextCapitalization.none,
+      keyboardType: TextInputType.text,
+      errorMessage: 'password at least 8 char',
+      isError: _passwordValidation,
     );
 
-    // register components
-    final nameField = Container(
-      width: Responsive.width(80, context),
-      child: TextFormField(
-        focusNode: _focusName,
-      )
-    );
 
     // loading components
     var loading = Center(
@@ -172,52 +162,6 @@ class _LoginPage extends State<LoginPage> {
         )
     );
 
-    Column loginStandard = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Container(
-          color: Color.fromRGBO(32, 150, 83, 1),
-          height: Responsive.height(15, context),
-          width: Responsive.width(100, context),
-        ),
-        Container(
-          height: Responsive.height(30, context),
-          width: Responsive.width(100, context),
-          padding: EdgeInsets.all(20),
-          child: Image(
-            image: AssetImage('Fast-logo.png'),
-          ),
-        ),
-        Container(
-            width: Responsive.width(80, context),
-            height: Responsive.height(5, context),
-            child:
-            usernameField
-        ),
-        Container(
-            width: Responsive.width(80, context),
-            height: Responsive.height(5, context),
-            child:
-            passwordField
-        ),
-        Container(
-          width: Responsive.width(80, context),
-          height: Responsive.height(5, context),
-          child: RaisedButton(
-            onPressed: () {
-              doLogin();
-            },
-            child: Text('Login'),
-          ),
-        ),
-        Container(
-            color: Color.fromRGBO(32, 150, 83, 1),
-            height: Responsive.height(25, context),
-            width: Responsive.width(100, context)
-        )
-      ],
-    );
-
     // ModernDesign
     Row textLoginOrRegister = Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -225,13 +169,14 @@ class _LoginPage extends State<LoginPage> {
         FlatButton(
           onPressed: () {
             setState(() {
-              isLogin = true;
+              _isLogin = true;
             });
           },
           child: Text('Login',
             style: TextStyle(
                 fontWeight: FontWeight.w900,
-                color: isLogin ? Colors.white : Colors.grey
+                fontSize: 20,
+                color: _isLogin ? Colors.white : Colors.grey
             ),
           ),
         ),
@@ -239,13 +184,14 @@ class _LoginPage extends State<LoginPage> {
         FlatButton(
           onPressed: () {
             setState(() {
-              isLogin = false;
+              _isLogin = false;
             });
           },
           child: Text('Register',
             style: TextStyle(
                 fontWeight: FontWeight.w900,
-                color: isLogin ? Colors.grey : Colors.white
+                fontSize: 20,
+                color: _isLogin ? Colors.grey : Colors.white
             ),
           ),
         )
@@ -255,7 +201,12 @@ class _LoginPage extends State<LoginPage> {
     ButtonTheme buttonSignInOrSignUp = ButtonTheme(
         minWidth: Responsive.width(80, context),
         child: RaisedButton(
-          child: Text(isLogin ? 'Sign In' : ' Sign Up'),
+          child: Text(
+              _isLogin ? 'Sign In' : ' Sign Up',
+            style: TextStyle(
+              fontSize: 16
+            ),
+          ),
           padding: EdgeInsets.all(8.0),
           textColor: Colors.white,
           color: Colors.blue,
@@ -274,11 +225,20 @@ class _LoginPage extends State<LoginPage> {
     Column loginOrRegister = Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        textLoginOrRegister,
-        usernameField,
-        passwordField,
+        Padding(
+          padding: EdgeInsets.only(top: 5),
+          child: textLoginOrRegister,
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 15.0),
+          child: usernameField,
+        ),
         Padding(
           padding: EdgeInsets.only(top: 10.0),
+          child: passwordField,
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 20.0),
           child: buttonSignInOrSignUp,
         )
       ],
@@ -287,9 +247,18 @@ class _LoginPage extends State<LoginPage> {
     Column loginOrRegisterNotActive = Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        textLoginOrRegister,
-        usernameField,
-        passwordField,
+        Padding(
+          padding: EdgeInsets.only(top: 5),
+          child: textLoginOrRegister,
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 10.0),
+          child: usernameField,
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 10.0),
+          child: passwordField,
+        )
       ],
     );
 
@@ -304,8 +273,8 @@ class _LoginPage extends State<LoginPage> {
     AnimatedContainer fields = AnimatedContainer(
       duration: Duration(milliseconds: 1500),
       curve: Curves.ease,
-      height: isActive ? 550 : 200,
-      child: isLogin ? isActive ? loginOrRegister : loginOrRegisterNotActive : registerFields,
+      height: _isActive ? 530 : 200,
+      child: _isLogin ? _isActive ? loginOrRegister : loginOrRegisterNotActive : registerFields,
       decoration: BoxDecoration(
           color: Colors.amberAccent,
           borderRadius: new BorderRadius.only(
@@ -326,7 +295,13 @@ class _LoginPage extends State<LoginPage> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         resizeToAvoidBottomPadding: false,
-        body: isLoging ? loading : modernDesign
+        body: new GestureDetector(
+          child: _isLogging ? loading : modernDesign,
+          onTap: () {
+            _focusPassword.unfocus();
+            _focusUsername.unfocus();
+          },
+        )
     );
   }
 }
@@ -342,9 +317,12 @@ class CustomTextFields extends StatefulWidget {
   final Function onChanged;
   final FocusNode focusNode;
   final double width;
-  final TextEditingController controller;
+  final TextInputType keyboardType;
+  final TextCapitalization textCapitalization;
+  final String errorMessage;
+  bool isError;
 
-  const CustomTextFields({
+  CustomTextFields({
     @required
     this.textInputAction,
     this.label,
@@ -356,36 +334,15 @@ class CustomTextFields extends StatefulWidget {
     this.onChanged,
     this.focusNode,
     this.width,
-    this.controller
+    this.keyboardType,
+    this.textCapitalization,
+    this.isError,
+    this.errorMessage
   });
 
   @override
   _CustomTextFieldsState createState() => _CustomTextFieldsState();
 }
-
-/*
-final passwordField = Container(
-  width: Responsive.width(80, context),
-  child: TextFormField(
-    focusNode: _focusPassword,
-    textInputAction: TextInputAction.done,
-    obscureText: true,
-    autofocus: false,
-    autocorrect: false,
-    onSaved: (value) => _password = value,
-    onChanged: (value) => _password = value,
-    onFieldSubmitted: (term) {
-      _focusPassword.unfocus();
-      doLogin();
-    },
-    decoration: InputDecoration(
-      prefixIcon: Icon(Icons.lock),
-      labelText: 'password',
-      contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-    ),
-  ),
-);
- */
 
 class _CustomTextFieldsState extends State<CustomTextFields> {
   double bottomToError = 12;
@@ -399,33 +356,36 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
         textInputAction: widget.textInputAction,
         obscureText: widget.secret,
         autocorrect: widget.autoCorrect,
+        keyboardType: widget.keyboardType,
+        textCapitalization: widget.textCapitalization,
         onChanged: widget.onChanged,
         onFieldSubmitted: widget.onFiledSubmitted,
-        controller: widget.controller,
         decoration: InputDecoration(
           prefixIcon: widget.icon,
           labelText: widget.label,
           border: new OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(20),
             borderSide: BorderSide(
-              style: BorderStyle.none,
-              width: 0
+              style: BorderStyle.solid,
+              color: Colors.black,
+              width: 3
             ),
           ),
           focusedBorder: new OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(20),
             borderSide: BorderSide(
               style: BorderStyle.solid,
+              color: Colors.green,
               width: 3
             )
           ),
           hintStyle: TextStyle(
-            color: Colors.green,
+            color: Colors.red,
             fontSize: 12,
             fontWeight: FontWeight.w300,
           ),
           contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          isDense: true,
+          errorText: widget.isError ? widget.errorMessage : null
         ),
       ),
     );

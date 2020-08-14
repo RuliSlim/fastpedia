@@ -57,8 +57,16 @@ class WebService with ChangeNotifier {
     });
     print([response, "ini response"]);
 
+    // username ga ada atau gimana gitu
+    if (response.data == 400) {
+      _loggedInStatus = Status.NotLoggedIn;
+      notifyListeners();
+      result = {'status': false, 'message': 'username or password invalid'};
+      return result;
+    }
+
     // ignore: unrelated_type_equality_checks
-    if (isError) {
+    if (response.statusCode != 200) {
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
       result = {'status': false, 'message': 'username or password invalid'};

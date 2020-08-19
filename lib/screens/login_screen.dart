@@ -1,3 +1,4 @@
+import 'package:commons/commons.dart';
 import 'package:fastpedia/components/custom_textfield.dart';
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/user.dart';
@@ -91,36 +92,57 @@ class _LoginPage extends State<LoginPage> {
     // Login function when pressed
     var doLogin = () {
       print([_email, _password, _name, _noHp, _nik, _username]);
-      /*
-      setState(() {
-        _isLogging = true;
-        _isActive = false;
-      });
-      
-      final Future<Map<String, dynamic>> successfulMessage =
-      webService.signIn(username: _username, password: _password);
 
-      successfulMessage.then((response) {
-        if (response['status']) {
-          setState(() {
-            _isLogging = false;
-          });
-          User user = response['user'];
-          Provider.of<UserProvider>(context, listen: false).setUser(user);
-          Navigator.pushReplacementNamed(context, '/home');
-        } else {
-          setState(() {
-            _isLogging = false;
-          });
-          Flushbar(
-            title: "Failed Login",
-            message: response['message'].toString(),
-            duration: Duration(seconds: 3),
-          ).show(context);
-        }
-      });
-      
-       */
+      if (_isLogin) {
+        setState(() {
+          _isLogging = true;
+          _isActive = false;
+        });
+        final Future<Map<String, dynamic>> successfulMessage =
+        webService.signIn(username: _username, password: _password);
+
+        successfulMessage.then((response) {
+          if (response['status']) {
+            setState(() {
+              _isLogging = false;
+            });
+            User user = response['user'];
+            Provider.of<UserProvider>(context, listen: false).setUser(user);
+            Navigator.pushReplacementNamed(context, '/home');
+          } else {
+            setState(() {
+              _isLogging = false;
+            });
+            Flushbar(
+              title: "Failed Login",
+              message: response['message'].toString(),
+              duration: Duration(seconds: 3),
+            ).show(context);
+          }
+        });
+      } else {
+        confirmationDialog(
+            context,
+            """
+1. Ruli Ganteng
+2. Ruli itu pintar
+3. Ruli itu keren
+            """,
+            title: "Syarat dan Ketentuan!",
+            textAlign: TextAlign.center,
+            positiveText: 'Setuju',
+            positiveAction: () {
+              print("JANCUKk");
+              print([_name, _email, _nik, _noHp, _username, _password]);
+            },
+            negativeText: "Tidak",
+            negativeAction: () {
+              print("tidaaaaaak");
+            },
+            confirmationText: "saya setuju atas semua pernyataan tsb..",
+            showNeutralButton: false
+        );
+      }
     };
 
     // validation username and password
@@ -187,8 +209,15 @@ class _LoginPage extends State<LoginPage> {
       focusNode: _focusPassword,
       autoCorrect: false,
       onFiledSubmitted: (val) {
-        _focusPassword.unfocus();
-        doLogin();
+        if (_isLogin) {
+          _focusPassword.unfocus();
+          doLogin();
+        } else {
+          setState(() {
+            _isActive = true;
+          });
+          print(_isActive);
+        }
       },
       textCapitalization: TextCapitalization.none,
       keyboardType: TextInputType.text,
@@ -256,6 +285,8 @@ class _LoginPage extends State<LoginPage> {
       ],
     );
 
+
+
     ButtonTheme buttonSignInOrSignUp = ButtonTheme(
         minWidth: Responsive.width(80, context),
         child: RaisedButton(
@@ -275,31 +306,116 @@ class _LoginPage extends State<LoginPage> {
               side: BorderSide(color: Colors.black)
           ),
           onPressed: () {
-            doLogin();
+            if (_isLogin) {
+              doLogin();
+            } else {
+              confirmationDialog(
+                  context,
+                  """
+Performing hot restart...
+Syncing files to device Android SDK built for x86...
+Restarted application in 2,772ms.
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
+I/flutter (32573): ini vaaal>>>>>>><<<<
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
+W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
+I/flutter (32573): tidaaaaaak
+Performing hot restart...
+Syncing files to device Android SDK built for x86...
+Restarted application in 2,772ms.
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
+I/flutter (32573): ini vaaal>>>>>>><<<<
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
+W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
+I/flutter (32573): tidaaaaaak
+Performing hot restart...
+Syncing files to device Android SDK built for x86...
+Restarted application in 2,772ms.
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
+I/flutter (32573): ini vaaal>>>>>>><<<<
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
+W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
+I/flutter (32573): tidaaaaaak
+Performing hot restart...
+Syncing files to device Android SDK built for x86...
+Restarted application in 2,772ms.
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
+I/flutter (32573): ini vaaal>>>>>>><<<<
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
+W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
+I/flutter (32573): tidaaaaaak
+                  """,
+                  title: "Syarat dan Ketentuan!",
+                  textAlign: TextAlign.center,
+                  positiveText: 'Setuju',
+                  positiveAction: () {
+                    print("JANCUKk");
+                    print([_name, _email, _nik, _noHp, _username, _password]);
+                  },
+                  negativeText: "Tidak",
+                  negativeAction: () {
+                    print("tidaaaaaak");
+                  },
+                  confirmationText: "saya setuju atas semua pernyataan tsb..",
+                  showNeutralButton: false
+              );
+            }
           },
         )
     );
 
-    Column loginOrRegister = Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 5),
-          child: textLoginOrRegister,
+    SingleChildScrollView loginOrRegister = SingleChildScrollView(
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 5),
+              child: textLoginOrRegister,
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 15.0),
+              child: usernameField,
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 10.0),
+              child: passwordField,
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 20.0),
+              child: buttonSignInOrSignUp,
+            )
+          ],
         ),
-        Padding(
-          padding: EdgeInsets.only(top: 15.0),
-          child: usernameField,
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 10.0),
-          child: passwordField,
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 20.0),
-          child: _isActive ? buttonSignInOrSignUp : null,
-        )
-      ],
+      ),
     );
 
     // register components
@@ -382,6 +498,7 @@ class _LoginPage extends State<LoginPage> {
       secret: false,
       onFiledSubmitted: (val) {
         _focusHP.unfocus();
+        FocusScope.of(context).requestFocus(_focusUsername);
       },
       onChanged: (val) {
         validation(value: val, type: TypeField.noHp);
@@ -419,7 +536,7 @@ class _LoginPage extends State<LoginPage> {
             ),
             Padding(
               padding: EdgeInsets.only(top: 20.0),
-              child: _isActive ? buttonSignInOrSignUp : null,
+              child: buttonSignInOrSignUp
             )
           ],
         ),
@@ -443,7 +560,7 @@ class _LoginPage extends State<LoginPage> {
     AnimatedContainer fields = AnimatedContainer(
       duration: Duration(milliseconds: 1500),
       curve: Curves.ease,
-      child: _isLogin ? loginOrRegister : _pageScreen == 1 ? registerFields : loginOrRegister,
+      child: _isLogin ? loginOrRegister : registerFields,
       decoration: BoxDecoration(
           color: Colors.amberAccent,
           borderRadius: new BorderRadius.only(
@@ -465,8 +582,8 @@ class _LoginPage extends State<LoginPage> {
             flex: _isActive ? 1 : 3,
           ),
           Expanded(
-            flex: _isActive ? _isLogin ? 1 : 3 : 1,
-            child: fields
+              flex: _isActive ? _isLogin ? 1 : 3 : 1,
+              child: fields
           ),
         ],
       ),

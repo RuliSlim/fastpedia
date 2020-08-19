@@ -37,8 +37,10 @@ dependencies:
   motion_tab_bar: ^0.1.5
   barcode_scan: ^3.0.1
   flutter_inappwebview: ^4.0.0+4
-  keyboard_attachable: ^1.0.3
+  commons: ^0.7.8+3
 
+
+# keyboard_attachable: ^1.0.3
 #  qr_flutter: ^3.2.0
 
 dev_dependencies:

@@ -6,7 +6,6 @@ class CustomTextFields extends StatefulWidget {
   final String label;
   final String hintText;
   final Widget icon;
-  final bool secret;
   final bool autoCorrect;
   final Function onFiledSubmitted;
   final Function onChanged;
@@ -15,6 +14,10 @@ class CustomTextFields extends StatefulWidget {
   final TextInputType keyboardType;
   final TextCapitalization textCapitalization;
   final String errorMessage;
+  final TextEditingController controller;
+  bool secret;
+  bool isHidePassword;
+  bool autoFocus;
   bool isError;
 
   CustomTextFields({
@@ -32,7 +35,10 @@ class CustomTextFields extends StatefulWidget {
     this.keyboardType,
     this.textCapitalization,
     this.isError,
-    this.errorMessage
+    this.controller,
+    this.errorMessage,
+    this.autoFocus,
+    this.isHidePassword = false
   });
 
   @override
@@ -54,9 +60,22 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
         keyboardType: widget.keyboardType,
         textCapitalization: widget.textCapitalization,
         onChanged: widget.onChanged,
+        autofocus: null == bool ? widget.autoFocus : false,
         onFieldSubmitted: widget.onFiledSubmitted,
+        controller: null == TextEditingController ? widget.controller : null,
         decoration: InputDecoration(
             prefixIcon: widget.icon,
+            suffixIcon: widget.label == "password" ? GestureDetector(
+              child: Icon(
+                widget.isHidePassword ? Icons.visibility_off : Icons.visibility
+              ),
+              onTap: () {
+                setState(() {
+                  widget.isHidePassword = !widget.isHidePassword;
+                  widget.secret = !widget.secret;
+                });
+              },
+            ) : null,
             labelText: widget.label,
             border: new OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),

@@ -46,12 +46,13 @@ class _WatchVideoState extends State<WatchVideo> {
 
   // countdown timer;
   Timer _timerCheck;
-  int _time = 10;
+  int _time = 100;
   bool isDoneLoadWeb = false;
   bool isPlayingVideo = false;
 
   void countDown() {
     if (isPlayingVideo && _timerCheck.isActive) {
+      _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("button.icon-button")[3].style.display="none";');
       setState(() {
         _time -= 1;
       });

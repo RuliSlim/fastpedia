@@ -38,6 +38,7 @@ dependencies:
   barcode_scan: ^3.0.1
   flutter_inappwebview: ^4.0.0+4
   commons: ^0.7.8+3
+  flashy_tab_bar: ^0.0.3
 
 
 # keyboard_attachable: ^1.0.3

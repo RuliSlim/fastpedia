@@ -1,6 +1,7 @@
 import 'package:fastpedia/screens/discover_video.dart';
 import 'package:fastpedia/screens/profile.dart';
 import 'package:fastpedia/screens/qr_scanner.dart';
+import 'package:flashy_tab_bar/flashy_tab_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_tab_bar/MotionTabBarView.dart';
@@ -18,6 +19,8 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
   MotionTabController _myTabController;
   bool isShown = true;
 
+  int _selectedIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -27,8 +30,8 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
 
   @override
   void dispose() {
-    super.dispose();
     _myTabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -75,12 +78,41 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
       ],
     );
 
+    FlashyTabBar myFlashyTabBar = FlashyTabBar(
+      selectedIndex: _selectedIndex,
+      animationCurve: Curves.bounceIn,
+      showElevation: true,
+      onItemSelected: (value) => setState(() {
+        _selectedIndex = value;
+      }),
+      items: [
+        FlashyTabBarItem(
+          icon: Icon(Icons.youtube_searched_for),
+          title: Text("Discovery")
+        ),
+        FlashyTabBarItem(
+          icon: Icon(Icons.scanner),
+          title: Text("QR")
+        ),
+        FlashyTabBarItem(
+          icon: Icon(Icons.person),
+          title: Text("Profile")
+        )
+      ],
+    );
+
     // Method
     dynamic tabBarShown () {
       if (isShown) {
-        return myMotionTabBar;
+        return Visibility(
+          child: myMotionTabBar,
+          visible: true,
+        );
       } else {
-        return null;
+        return Visibility(
+          child: myMotionTabBar,
+          visible: false,
+        );
       }
     }
 

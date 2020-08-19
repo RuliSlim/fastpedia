@@ -148,7 +148,7 @@ class _WatchVideoState extends State<WatchVideo> {
       onPressed: () async {
         var hasil = getDom();
         hasil.then((value) {
-          if (isSubscribe.length == 10) {
+          if (!isSubscribe.contains("SUBSCRIBED")) {
             Flushbar(
               title: 'Failed!',
               message: 'You Have To Subscribe!',

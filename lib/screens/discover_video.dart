@@ -131,7 +131,7 @@ class _WatchVideoState extends State<WatchVideo> {
     SmoothStarRating starRating = SmoothStarRating(
       rating: _rating,
       isReadOnly: false,
-      size: 20,
+      size: 30,
       filledIconData: Icons.star,
       halfFilledIconData: Icons.star,
       allowHalfRating: true,
@@ -163,7 +163,7 @@ class _WatchVideoState extends State<WatchVideo> {
       },
     );
 
-    Text comments = Text(_comments);
+    Text comments = Text(_comments, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900),);
 
     // box container
     AnimatedContainer containerReview = AnimatedContainer(
@@ -214,7 +214,10 @@ class _WatchVideoState extends State<WatchVideo> {
                 children: <Widget>[
                   Expanded(
                     flex: 2,
-                    child: starRating,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: starRating,
+                    ),
                   ),
                   Expanded(
                     flex: 2,

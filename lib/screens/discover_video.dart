@@ -1,4 +1,3 @@
-import 'package:fastpedia/components/tab_bar.dart';
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/user.dart';
 import 'package:fastpedia/services/user_preferences.dart';
@@ -6,8 +5,8 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'dart:async';
-import 'package:webview_flutter/webview_flutter.dart';
 
+import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 // Dashboard
 class WatchVideo extends StatefulWidget {
@@ -24,12 +23,8 @@ class _WatchVideoState extends State<WatchVideo> {
   // States
   Future userFuture;
   Future<User> getUserData() => UserPreferences().getUser();
-  String urlVideo = 'https://m.youtube.com/watch?v=_uQrJ0TkZlc';
+  String urlVideo = 'https://m.youtube.com/watch?v=elLkVWt7gRM';
   bool isDone = false;
-
-  // wkwebViewController
-  final Completer<WebViewController> _controller = Completer<WebViewController>();
-  WebViewController _myController;
 
   // appWebViewControoler
   InAppWebViewController _inAppWebViewController;
@@ -46,13 +41,22 @@ class _WatchVideoState extends State<WatchVideo> {
 
   // countdown timer;
   Timer _timerCheck;
-  int _time = 100;
+  int _time = 10;
   bool isDoneLoadWeb = false;
   bool isPlayingVideo = false;
 
+  // rating for videos
+  double _rating = 3.0;
+  String _comments = "Cukup bagus!";
+
   void countDown() {
     if (isPlayingVideo && _timerCheck.isActive) {
-      _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("button.icon-button")[3].style.display="none";');
+      var data = _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("button.icon-button").length');
+      data.then((value) {
+        if (value >= 20) {
+          _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("button.icon-button")[3].style.display="none";');
+        }
+      });
       setState(() {
         _time -= 1;
       });
@@ -77,7 +81,14 @@ class _WatchVideoState extends State<WatchVideo> {
   @override
   void initState() {
     super.initState();
-    //checkIfPlay();
+  }
+
+  @override
+  void dispose() {
+    if (_timerCheck != null) {
+      _timerCheck.cancel();
+    }
+    super.dispose();
   }
 
   @override
@@ -114,8 +125,123 @@ class _WatchVideoState extends State<WatchVideo> {
       ],
     );
 
+    // fields for review
+    // stars for rating
+    // comment for review
+    SmoothStarRating starRating = SmoothStarRating(
+      rating: _rating,
+      isReadOnly: false,
+      size: 20,
+      filledIconData: Icons.star,
+      halfFilledIconData: Icons.star,
+      allowHalfRating: true,
+      starCount: 5,
+      spacing: 2.0,
+      onRated: (double value) {
+        setState(() {
+          switch (value.round()) {
+            case 0:
+              _comments = "Tidak menarik..";
+              break;
+            case 1:
+              _comments = "Kurang menarik..";
+              break;
+            case 2:
+              _comments = "Cukup menarik..";
+              break;
+            case 3:
+              _comments = "Menarik..";
+              break;
+            case 4:
+              _comments = "Sangat menarik..";
+              break;
+            default:
+              _comments = "Sangat menarik sekali..";
+              break;
+          }
+        });
+      },
+    );
+
+    Text comments = Text(_comments);
+
+    // box container
+    AnimatedContainer containerReview = AnimatedContainer(
+      duration: Duration(seconds: 1),
+      curve: Curves.ease,
+      decoration: BoxDecoration(
+          color: Colors.grey,
+          borderRadius: BorderRadius.only(
+              topRight: Radius.circular(30),
+              topLeft: Radius.circular(30)
+          )
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text("Tinggalkan Review",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900
+                  ),
+                )
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Container(
+              width: Responsive.width(80, context),
+              padding: EdgeInsets.only(
+                  left: 20,
+                  right: 20
+              ),
+              decoration: BoxDecoration(
+                  border: Border(
+                      top: BorderSide(
+                          color: Colors.white,
+                          width: 3
+                      )
+                  )
+              ),
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    flex: 2,
+                    child: starRating,
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: comments,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+
     return Scaffold(
-      body: inAppwebView,
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 4,
+            child: inAppwebView,
+          ),
+          Expanded(
+            flex: 2,
+            child: containerReview,
+          )
+        ],
+      ),
       floatingActionButton: _containerButton(),
     );
   }
@@ -147,8 +273,8 @@ class _WatchVideoState extends State<WatchVideo> {
   FloatingActionButton _subsAction() {
     return FloatingActionButton(
       onPressed: () async {
-        var hasil = getDom();
-        hasil.then((value) {
+        var result = getDom();
+        result.then((value) {
           if (!isSubscribe.contains("SUBSCRIBED")) {
             Flushbar(
               title: 'Failed!',
@@ -183,7 +309,6 @@ class _WatchVideoState extends State<WatchVideo> {
           _time = 10;
         });
         _timerCheck.cancel();
-        //_myController.loadUrl(urlVideo);
         _inAppWebViewController.loadUrl(url: urlVideo);
       },
     );
@@ -194,6 +319,7 @@ class _WatchVideoState extends State<WatchVideo> {
     _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[2].style.display="none";');
     _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[3].style.display="none";');
     _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".mobile-topbar-header.cbox")[0].style.display="none";');
+    _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("ytm-comment-section-renderer.scwnr-content")[0].style.display="none";');
     _inAppWebViewController.evaluateJavascript(source: 'var parent = document.getElementsByTagName("ytm-slim-owner-renderer")[0]; '
         'var child = parent.getElementsByTagName("a"); '
         'child[0].removeAttribute("href");'

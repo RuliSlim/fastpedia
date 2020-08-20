@@ -19,7 +19,7 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
   MotionTabController _myTabController;
   bool isShown = true;
 
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
 
   @override
   void initState() {
@@ -40,10 +40,15 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
     void onPressedTabBar (int value) {
       setState(() {
         _myTabController.index = value;
+        _selectedIndex = value;
         switch (value) {
           case 0: {
             titleAppBar = 'Discover';
             isShown = false;
+          }
+          break;
+          case 1: {
+            isShown = true;
           }
           break;
           default: {
@@ -82,9 +87,9 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
       selectedIndex: _selectedIndex,
       animationCurve: Curves.bounceIn,
       showElevation: true,
-      onItemSelected: (value) => setState(() {
-        _selectedIndex = value;
-      }),
+      onItemSelected: (value) {
+        onPressedTabBar(value);
+      },
       items: [
         FlashyTabBarItem(
           icon: Icon(Icons.youtube_searched_for),
@@ -104,15 +109,9 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
     // Method
     dynamic tabBarShown () {
       if (isShown) {
-        return Visibility(
-          child: myMotionTabBar,
-          visible: true,
-        );
+        return myFlashyTabBar;
       } else {
-        return Visibility(
-          child: myMotionTabBar,
-          visible: false,
-        );
+        return null;
       }
     }
 
@@ -120,6 +119,7 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
       setState(() {
         isShown = true;
         tabSelected = 'Discover';
+        _selectedIndex = 0;
       });
     }
 
@@ -129,24 +129,38 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
       });
     }
 
+    final bodyScreen = [
+      Container(
+        child: WatchVideo(onTimeAndSubSuccess: onTimeAndSubSuccess, onNextVideo: onNextVideo),
+      ),
+      Container(
+        child: ScreenScanner(),
+      ),
+      Container(
+        child: Profile(),
+      )
+    ];
+
+    final oldBodyScreen = MotionTabBarView(
+      controller: _myTabController,
+      children: <Widget>[
+        Container(
+            child: WatchVideo(onTimeAndSubSuccess: onTimeAndSubSuccess, onNextVideo: onNextVideo)
+        ),
+        Container(
+          child: ScreenScanner(),
+        ),
+        Container(
+          child: Profile(),
+        ),
+      ],
+    );
+
     // TODO: implement build
     return Scaffold(
       appBar: appBar,
       bottomNavigationBar: tabBarShown(),
-      body: MotionTabBarView(
-        controller: _myTabController,
-        children: <Widget>[
-          Container(
-            child: WatchVideo(onTimeAndSubSuccess: onTimeAndSubSuccess, onNextVideo: onNextVideo)
-          ),
-          Container(
-            child: ScreenScanner(),
-          ),
-          Container(
-            child: Profile(),
-          ),
-        ],
-      ),
+      body: bodyScreen[_selectedIndex]
     );
   }
 }

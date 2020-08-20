@@ -32,13 +32,14 @@ dependencies:
   shared_preferences: ^0.5.8
   provider: ^4.3.1
   flushbar: ^1.10.4
-  webview_flutter: ^0.3.22+1
   get: ^3.4.3
   motion_tab_bar: ^0.1.5
   barcode_scan: ^3.0.1
   flutter_inappwebview: ^4.0.0+4
   commons: ^0.7.8+3
   flashy_tab_bar: ^0.0.3
+  flutter_media_notification: ^1.2.6
+  smooth_star_rating: ^1.1.1
 
 
 # keyboard_attachable: ^1.0.3

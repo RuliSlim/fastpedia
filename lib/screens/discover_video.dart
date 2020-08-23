@@ -265,7 +265,7 @@ class _WatchVideoState extends State<WatchVideo> {
         onPressed: () async {
           Flushbar(
             title: 'Error',
-            message: 'You have to watch $_time',
+            message: 'You have to watch $_time s',
             duration: Duration(seconds: 3),
           ).show(context);
         },

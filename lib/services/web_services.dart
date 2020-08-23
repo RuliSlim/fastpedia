@@ -17,7 +17,7 @@ enum Status {
 
 class WebService with ChangeNotifier {
   var dio = new Dio();
-  static const baseUrl = "https://backend-evo.herokuapp.com";
+  static const baseUrl = "http://192.168.100.42:8000/fast-mobile";
   static const loginUrl = "$baseUrl/login/";
 
   Status _loggedInStatus = Status.NotLoggedIn;
@@ -31,7 +31,7 @@ class WebService with ChangeNotifier {
     bool isError = false;
 
     final Map<String, dynamic> logInData = {
-      'username': username,
+      'username': username.toUpperCase(),
       'password': password
     };
 
@@ -39,39 +39,19 @@ class WebService with ChangeNotifier {
     notifyListeners();
 
     print([logInData, "sfusahfusa"]);
-    final response = await dio.post(
-      loginUrl,
-      data: jsonEncode(logInData),
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      ),
-    ).catchError((onError) {
-      isError = true;
-      print([onError, 'sajfnsaljfjsaf']);
-      _loggedInStatus = Status.NotLoggedIn;
-      notifyListeners();
-      result = {'status': false, 'message': 'username or password invalid'};
-      return result;
-    });
-    print([response, "ini response"]);
+    try {
+      final response = await dio.post(
+          loginUrl,
+          data: jsonEncode(logInData),
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json'
+            },
+          )
+      );
 
-    // username ga ada atau gimana gitu
-    if (response.data == 400) {
-      _loggedInStatus = Status.NotLoggedIn;
-      notifyListeners();
-      result = {'status': false, 'message': 'username or password invalid'};
-      return result;
-    }
-
-    // ignore: unrelated_type_equality_checks
-    if (response.statusCode != 200) {
-      _loggedInStatus = Status.NotLoggedIn;
-      notifyListeners();
-      result = {'status': false, 'message': 'username or password invalid'};
-    } else {
       final responseData = response.data;
+      print(responseData);
       final User user = User.fromJson(responseData);
       UserPreferences().saveUser(user);
 
@@ -79,6 +59,16 @@ class WebService with ChangeNotifier {
       notifyListeners();
 
       result = {'status': true, 'message': 'Successful', 'user': user};
+    } on DioError catch(e) {
+      if(e.response != null) {
+        _loggedInStatus = Status.NotLoggedIn;
+        notifyListeners();
+        result = {'status': false, 'message': 'username or password invalid'};
+      } else{
+        _loggedInStatus = Status.NotLoggedIn;
+        notifyListeners();
+        result = {'status': false, 'message': 'username or password invalid'};
+      }
     }
 
     return result;

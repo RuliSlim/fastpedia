@@ -9,6 +9,10 @@ class UserPreferences {
     pref.setString('username', user.username);
     pref.setString('token', user.token);
     pref.setString('role', user.role);
+    pref.setString('name', user.name);
+    pref.setString('email', user.email);
+    pref.setString('nik', user.nik);
+    pref.setString('phone', user.phone);
   }
 
   Future<User> getUser() async {
@@ -18,12 +22,20 @@ class UserPreferences {
     String username = pref.get('username');
     String token = pref.get('token');
     String role = pref.get('role');
+    String name = pref.get('name');
+    String email = pref.get('email');
+    String nik = pref.get('nik');
+    String phone = pref.get('phone');
 
     return User(
       id: id,
       username: username,
       token: token,
-      role: role
+      role: role,
+      name: name,
+      email: email,
+      nik: nik,
+      phone: phone
     );
   }
 
@@ -34,6 +46,10 @@ class UserPreferences {
     pref.remove('username');
     pref.remove('token');
     pref.remove('role');
+    pref.remove('name');
+    pref.remove('email');
+    pref.remove('nik');
+    pref.remove('phone');
   }
 
   Future<String> getToken() async {

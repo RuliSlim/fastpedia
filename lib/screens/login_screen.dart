@@ -1,6 +1,7 @@
 import 'package:commons/commons.dart';
 import 'package:fastpedia/components/custom_textfield.dart';
 import 'package:fastpedia/main.dart';
+import 'package:fastpedia/model/enums.dart';
 import 'package:fastpedia/model/user.dart';
 import 'package:fastpedia/services/user_provider.dart';
 import 'package:fastpedia/services/web_services.dart';
@@ -102,6 +103,7 @@ class _LoginPage extends State<LoginPage> {
         webService.signIn(username: _username, password: _password);
 
         successfulMessage.then((response) {
+          print([response, "ini response di do login"]);
           if (response['status']) {
             setState(() {
               _isLogging = false;
@@ -285,15 +287,13 @@ class _LoginPage extends State<LoginPage> {
       ],
     );
 
-
-
     ButtonTheme buttonSignInOrSignUp = ButtonTheme(
         minWidth: Responsive.width(80, context),
         child: RaisedButton(
           child: Text(
             _isLogin ? 'Sign In' : ' Sign Up',
             style: TextStyle(
-                fontSize: 16
+                fontSize: 20
             ),
           ),
           padding: EdgeInsets.all(8.0),
@@ -578,7 +578,10 @@ I/flutter (32573): tidaaaaaak
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Expanded(
-            child: Image(image: AssetImage('Fast-logo.png'),),
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Image(image: AssetImage('Fast-logo.png'),),
+            ),
             flex: _isActive ? 1 : 3,
           ),
           Expanded(
@@ -606,13 +609,4 @@ I/flutter (32573): tidaaaaaak
         )
     );
   }
-}
-
-enum TypeField {
-  username,
-  password,
-  name,
-  email,
-  nik,
-  noHp
 }

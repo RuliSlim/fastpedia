@@ -90,6 +90,7 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
       onItemSelected: (value) {
         onPressedTabBar(value);
       },
+      backgroundColor: Colors.amberAccent,
       items: [
         FlashyTabBarItem(
           icon: Icon(Icons.youtube_searched_for),

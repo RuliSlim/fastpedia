@@ -19,6 +19,8 @@ class CustomTextFields extends StatefulWidget {
   bool isHidePassword;
   bool autoFocus;
   bool isError;
+  String initialValue;
+  bool readOnly;
 
   CustomTextFields({
     @required
@@ -38,7 +40,9 @@ class CustomTextFields extends StatefulWidget {
     this.controller,
     this.errorMessage,
     this.autoFocus,
-    this.isHidePassword = false
+    this.isHidePassword = false,
+    this.initialValue,
+    this.readOnly = false
   });
 
   @override
@@ -63,6 +67,8 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
         autofocus: null == bool ? widget.autoFocus : false,
         onFieldSubmitted: widget.onFiledSubmitted,
         controller: null == TextEditingController ? widget.controller : null,
+        initialValue: widget.initialValue != null ? widget.initialValue : null,
+        readOnly: widget.readOnly ? widget.readOnly : false,
         decoration: InputDecoration(
             prefixIcon: widget.icon,
             suffixIcon: widget.label == "password" ? GestureDetector(

@@ -40,6 +40,7 @@ dependencies:
   flashy_tab_bar: ^0.0.3
   flutter_media_notification: ^1.2.6
   smooth_star_rating: ^1.1.1
+  permission_handler: ^5.0.1+1
 
 
 # keyboard_attachable: ^1.0.3

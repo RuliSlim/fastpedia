@@ -18,10 +18,12 @@ enum Status {
 
 class WebService with ChangeNotifier {
   var dio = new Dio();
-  static const baseUrl = "http://192.168.100.11:8000/fast-mobile";
+  //static const baseUrl = "http://192.168.100.11:8000/fast-mobile";
+  static const baseUrl = "http://192.168.2.106:8000/fast-mobile";
   static const loginUrl = "$baseUrl/login/";
   static const registerUrl = "$baseUrl/register-mobile/";
   static const updateUrl = "$baseUrl/update-user-mobile/";
+  static const updatePasswordUrl = "$baseUrl/change-password-mobile/";
 
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredStatus = Status.NotRegistered;
@@ -61,7 +63,6 @@ class WebService with ChangeNotifier {
 
       result = {'status': true, 'message': 'Successful', 'user': user};
     } on DioError catch (e) {
-      print(e.response.data);
       if (e.response != null) {
         _loggedInStatus = Status.NotLoggedIn;
         notifyListeners();
@@ -89,8 +90,6 @@ class WebService with ChangeNotifier {
         'referral_by': 24
       };
 
-      print([registerData, '<<<<<<<<SADSDSA']);
-
       _loggedInStatus = Status.Authenticating;
       notifyListeners();
 
@@ -112,7 +111,6 @@ class WebService with ChangeNotifier {
 
       result = {'status': true, 'message': user.message, 'user': user};
     } on DioError catch (e) {
-      print([e.response, e.response.data, "<<<<<<<<<<?"]);
       if (e.response.statusCode == 400) {
         final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
         _loggedInStatus = Status.NotLoggedIn;
@@ -139,13 +137,10 @@ class WebService with ChangeNotifier {
         'referral_by': 24
       };
 
-      print([updateData, '<<<<<<<<SADSDSA']);
-
       _loggedInStatus = Status.Authenticating;
       notifyListeners();
 
       final token = await UserPreferences().getToken();
-      print([token, '<<<<<<<<<<<<']);
 
       final response = await dio.post(
           updateUrl,
@@ -173,7 +168,6 @@ class WebService with ChangeNotifier {
 
       result = {'status': true, 'message': user.message, 'user': user};
     } on DioError catch (e) {
-      print([e.response, e.response.data, "<<<<<<<<<<?"]);
       if (e.response.statusCode == 400) {
         final SerializerHandling error = SerializerHandling.fromJson(e.response.data);
 
@@ -201,6 +195,54 @@ class WebService with ChangeNotifier {
         });
 
         result = {'status': false, 'message': showErrorMessage};
+      } else {
+        _loggedInStatus = Status.NotLoggedIn;
+        notifyListeners();
+        result = {'status': false, 'message': 'Server is on maintenance'};
+      }
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> updatePassword({String oldPassword, String newPassword}) async {
+    var result;
+
+    try {
+      final Map<String, dynamic> updateData = {
+        'password_lama': oldPassword,
+        'password_baru1': newPassword,
+        'password_baru2': newPassword
+      };
+
+      _loggedInStatus = Status.Authenticating;
+      notifyListeners();
+
+      final token = await UserPreferences().getToken();
+
+      final response = await dio.post(
+          updatePasswordUrl,
+          data: jsonEncode(updateData),
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': 'Token $token'
+            },
+          )
+      );
+
+      final responseData = response.data;
+      final SuccessRegisterAndUpdate user = SuccessRegisterAndUpdate.fromJson(responseData);
+
+      _loggedInStatus = Status.LoggedIn;
+      notifyListeners();
+
+      result = {'status': true, 'message': user.message, 'user': user};
+    } on DioError catch (e) {
+      if (e.response.statusCode == 406 || e.response.statusCode == 400) {
+        final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
+        _loggedInStatus = Status.NotLoggedIn;
+        notifyListeners();
+        result = {'status': false, 'message': error.message};
       } else {
         _loggedInStatus = Status.NotLoggedIn;
         notifyListeners();

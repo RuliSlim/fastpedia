@@ -26,6 +26,7 @@ class _ProfileState extends State<Profile> {
   bool _isEditing = false;
   bool _isReadOnly = true;
   bool _changePassword = false;
+  bool _isLoading = false;
 
   // focus fields;
   FocusNode _focusName = new FocusNode();
@@ -59,7 +60,6 @@ class _ProfileState extends State<Profile> {
 
   void getUsername () async {
     User user = await UserPreferences().getUser();
-    print([user.phone, user.name, user.nik]);
     setState(() {
       userData = user;
       username = user.username;
@@ -108,26 +108,68 @@ class _ProfileState extends State<Profile> {
     //
 
     // do update
-    void _updateFunction() {
+    void _updateFunction() async {
       setState(() {
         _isReadOnly = true;
         _isEditing = false;
         _changePassword = false;
+        _isLoading = true;
       });
 
-      final Future<Map<String, dynamic>> server = webService.update(name: _name, email: _email, phone: _noHp, nik: _nik);
-      server.then((response) {
-        print([response, 'SADSADSMA>DSAMD>SAMD>SAM>DMS']);
-        if (response['status']) {
-          successDialog(context, response['message']);
-        } else {
-          errorDialog(context, response['message']);
-        }
+      Map<String, dynamic> response =  await webService.update(name: _name, email: _email, phone: _noHp, nik: _nik);
+
+      if (response['status']) {
+        successDialog(context, response['message']);
+      } else {
+        errorDialog(context, response['message']);
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      getUsername();
+    }
+
+    void _changePasswordFunction() async {
+      setState(() {
+        _isReadOnly = true;
+        _isEditing = false;
+        _changePassword = false;
+        _isLoading = true;
+      });
+
+      if (_passwordValidationNew || _passwordValidation) {
+        errorDialog(context, "password tidak valid");
+        return null;
+      }
+
+      Map<String, dynamic> response = await webService.updatePassword(newPassword: _passwordNew, oldPassword: _passwordOld);
+
+      if (response['status']) {
+        successDialog(context, response['message']);
+      } else {
+        errorDialog(context, response['message']);
+      }
+
+      setState(() {
+        _isLoading = false;
       });
 
       getUsername();
     }
     //
+
+    // loading components
+    var loading = Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            CircularProgressIndicator(),
+            Text('Authenticating ... Please Wait')
+          ],
+        )
+    );
     
     Row profilePicture = Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -145,7 +187,6 @@ class _ProfileState extends State<Profile> {
 
     RaisedButton buttonLogOut = RaisedButton(
       onPressed: () {
-        print('ini panteq kao');
         logoutUser();
         Navigator.pushReplacementNamed(context, '/login');
       },
@@ -355,7 +396,7 @@ class _ProfileState extends State<Profile> {
       minWidth: Responsive.width(80, context),
       child: RaisedButton(
         child: Text(
-          _isMyVideo ? "Add Video" : _isEditing ? "Update" : "Edit",
+          _isMyVideo ? "Add Video" : _isEditing ? _changePassword ? "Update Password" : "Update" : "Edit",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w900,
@@ -371,7 +412,7 @@ class _ProfileState extends State<Profile> {
             side: BorderSide(color: Colors.black)
         ),
         onPressed: () {
-          _isMyVideo ? null : _isEditing ? _updateFunction() : _changeToEdit();
+          _isMyVideo ? null : _isEditing ? _changePassword ? _changePasswordFunction() : _updateFunction() : _changeToEdit();
         },
       ),
     );
@@ -396,20 +437,20 @@ class _ProfileState extends State<Profile> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget> [
             Padding(
-              padding: EdgeInsets.only(top: 15),
+              padding: EdgeInsets.only(top: _isEditing ? 0 : 10),
               child: _isEditing ? null : nameField,
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: _isEditing ? emailFieldEdit : emailField,
+              padding: EdgeInsets.only(top: _changePassword ? 0 : 10),
+              child: _isEditing ? _changePassword ? null : emailFieldEdit : emailField,
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10),
+              padding: EdgeInsets.only(top: _isEditing ? 0 : 10),
               child: _isEditing ? null : nikField,
             ),
             Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: _isEditing ? noHPFieldEdit : noHPField,
+              padding: EdgeInsets.only(top: _isEditing ? _changePassword ? 0 : 10 : 10),
+              child: _isEditing ? _changePassword ? null : noHPFieldEdit : noHPField,
             ),
             Padding(
               padding: EdgeInsets.only(top: _isEditing ? 10 : 0),
@@ -478,7 +519,7 @@ class _ProfileState extends State<Profile> {
       //appBar: appBar,
       body: Padding(
           padding: const EdgeInsets.only(top: 20.0),
-          child: animationPadding
+          child: _isLoading ? loading : animationPadding
       ),
     );
   }

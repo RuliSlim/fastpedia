@@ -91,8 +91,6 @@ class _LoginPage extends State<LoginPage> {
 
       final Future<Map<String, dynamic>> response = webService.register(name: _name, email: _email, nik: _nik, phone: _noHp, username: _username, password: _password);
       response.then((res) {
-        print([res, 'ini response di doregister']);
-
         if (res['status']) {
           successDialog(context, res['message'].toString(),
             title: "Register Sukses"
@@ -245,9 +243,6 @@ I/flutter (32573): tidaaaaaak
               doRegister();
             },
             negativeText: "Tidak",
-            negativeAction: () {
-              print("tidaaaaaak");
-            },
             confirmationText: "saya setuju atas semua pernyataan tsb..",
             showNeutralButton: false
         );

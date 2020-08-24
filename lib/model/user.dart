@@ -66,6 +66,16 @@ class SendUpdateUser {
   }
 }
 
+class SendChangePassword {
+  String oldPassword;
+  String newPassword;
+
+  SendChangePassword(String oldPassword, String newPassword) {
+    this.oldPassword = oldPassword;
+    this.newPassword = newPassword;
+  }
+}
+
 class SuccessRegisterAndUpdate {
   String message;
 

@@ -91,8 +91,6 @@ class _TabItemState extends State<TabItem> {
                   color: PURPLE,
                 ),
                 onPressed: () {
-//                  print('ini cuuuk pribealdnsnsa');
-//                  print();
                   widget.callBackFunction();
                 },
               ),

@@ -71,7 +71,7 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
         readOnly: widget.readOnly ? widget.readOnly : false,
         decoration: InputDecoration(
             prefixIcon: widget.icon,
-            suffixIcon: widget.label == "password" ? GestureDetector(
+            suffixIcon: widget.label == "password" || widget.label == "password lama" || widget.label == "password baru" ? GestureDetector(
               child: Icon(
                 widget.isHidePassword ? Icons.visibility_off : Icons.visibility
               ),
@@ -182,7 +182,7 @@ class _CustomTextFieldsStateSecondary extends State<CustomTextFieldsSecondary> {
         readOnly: widget.readOnly ? widget.readOnly : false,
         decoration: InputDecoration(
             prefixIcon: widget.icon,
-            suffixIcon: widget.label == "password" ? GestureDetector(
+            suffixIcon: widget.label == "password" || widget.label == "password lama" || widget.label == "password baru" ? GestureDetector(
               child: Icon(
                   widget.isHidePassword ? Icons.visibility_off : Icons.visibility
               ),

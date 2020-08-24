@@ -7,10 +7,17 @@ import 'package:fastpedia/services/user_preferences.dart';
 import 'package:fastpedia/services/user_provider.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Permission.notification.request();
+  await Permission.mediaLibrary.request();
+  await Permission.camera.request();
+  await Permission.microphone.request();
+
   runApp(MyApp());
 }
 
@@ -28,13 +35,6 @@ class _MyApp extends State<MyApp> {
   void initState() {
     super.initState();
     userFuture = getUserData();
-    userFuture.then((value) {
-      if (value.username == null) {
-        print('ini vaaal>>>>>>><<<<');
-      } else {
-        print('ini masuuuk njiiing');
-      }
-    });
   }
 
   Future<User> getUserData() => UserPreferences().getUser();
@@ -55,14 +55,11 @@ class _MyApp extends State<MyApp> {
         home: FutureBuilder(
             future: userFuture,
             builder: (context, snapshot) {
-              print([snapshot, "ini snapshot"]);
-
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
                 case ConnectionState.waiting:
                   return CircularProgressIndicator();
                 default:
-                  print([snapshot.data.username, 'ini default']);
                   if (snapshot.hasError)
                     return Text('Error: ${snapshot.error}');
                   else if (snapshot.data.token == null)

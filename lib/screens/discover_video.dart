@@ -23,7 +23,7 @@ class _WatchVideoState extends State<WatchVideo> {
   // States
   Future userFuture;
   Future<User> getUserData() => UserPreferences().getUser();
-  String urlVideo = 'https://m.youtube.com/watch?v=elLkVWt7gRM';
+  String urlVideo = 'https://m.youtube.com/watch?v=x62eLEaRWo8';
   bool isDone = false;
 
   // appWebViewControoler
@@ -32,7 +32,7 @@ class _WatchVideoState extends State<WatchVideo> {
   // dataDom
   String isSubscribe;
   Future<String> getDom () async {
-    String data = await _inAppWebViewController.evaluateJavascript(source: "document.querySelectorAll(\"button.c3-material-button-button\")[5].innerText");
+    String data = await _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("ytm-subscribe-button-renderer")[0].childNodes[0].childNodes[0].childNodes[0].getAttribute("aria-pressed");');
     setState(() {
       isSubscribe = data;
     });
@@ -66,7 +66,7 @@ class _WatchVideoState extends State<WatchVideo> {
   void checkIfPlay() {
     const oneSec = Duration(seconds: 1);
     _timerCheck = new Timer.periodic(oneSec, (timer) {
-      if (isDoneLoadWeb) {
+      if (isDoneLoadWeb && _time >= 1) {
         var player = _inAppWebViewController.evaluateJavascript(source: 'document.getElementById("movie_player").classList.contains("playing-mode");');
         player.then((value) {
           setState(() {
@@ -74,6 +74,8 @@ class _WatchVideoState extends State<WatchVideo> {
           });
           countDown();
         });
+      } else {
+        _timerCheck.cancel();
       }
     });
   }
@@ -102,12 +104,11 @@ class _WatchVideoState extends State<WatchVideo> {
           width: Responsive.width(100, context),
           child: InAppWebView(
             initialUrl: urlVideo,
+            initialHeaders: {},
             initialOptions: InAppWebViewGroupOptions(
                 crossPlatform: InAppWebViewOptions(
-                    debuggingEnabled: false,
-                    mediaPlaybackRequiresUserGesture: false,
-                    javaScriptEnabled: true,
-                    useShouldInterceptAjaxRequest: true
+                  debuggingEnabled: true,
+                  mediaPlaybackRequiresUserGesture: false
                 )
             ),
             onWebViewCreated: (InAppWebViewController controller) {
@@ -278,7 +279,7 @@ class _WatchVideoState extends State<WatchVideo> {
       onPressed: () async {
         var result = getDom();
         result.then((value) {
-          if (!isSubscribe.contains("SUBSCRIBED")) {
+          if (isSubscribe == "false") {
             Flushbar(
               title: 'Failed!',
               message: 'You Have To Subscribe!',
@@ -307,7 +308,7 @@ class _WatchVideoState extends State<WatchVideo> {
       onPressed: () {
         widget.onNextVideo();
         setState(() {
-          urlVideo = 'https://m.youtube.com/watch?v=H5-e6M7SjL8';
+          urlVideo = 'https://m.youtube.com/watch?v=vlCgfLDeDwU';
           isDone = false;
           _time = 10;
         });
@@ -324,7 +325,7 @@ class _WatchVideoState extends State<WatchVideo> {
     _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".mobile-topbar-header.cbox")[0].style.display="none";');
     _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("ytm-comment-section-renderer.scwnr-content")[0].style.display="none";');
     _inAppWebViewController.evaluateJavascript(source: 'var parent = document.getElementsByTagName("ytm-slim-owner-renderer")[0]; '
-        'var child = parent.getElementsByTagName("a"); '
+        'var child = parent.getElementsByTagName("a");'
         'child[0].removeAttribute("href");'
     );
   }

@@ -51,7 +51,6 @@ class _ScreenScanner extends State<ScreenScanner> {
   Future scan() async {
     try {
       ScanResult barCode = await BarcodeScanner.scan();
-      print([barCode, '<<<<<<<<<<<>ASD>SA>DSA>F>SA>FSA>FS>']);
       setState(() {
         this.barCode = barCode.toString();
       });

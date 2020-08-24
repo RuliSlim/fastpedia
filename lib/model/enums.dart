@@ -11,3 +11,8 @@ enum InfoVideos {
   videos,
   info,
 }
+
+enum StatusCode {
+  badRequest,
+
+}

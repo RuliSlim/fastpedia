@@ -5,7 +5,6 @@ import 'package:fastpedia/model/enums.dart';
 import 'package:fastpedia/model/user.dart';
 import 'package:fastpedia/services/user_provider.dart';
 import 'package:fastpedia/services/web_services.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
@@ -20,22 +19,15 @@ class _LoginPage extends State<LoginPage> {
   String _username, _password;
   bool _usernameValidation = false;
   bool _passwordValidation = false;
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-
+  List<String> _validateMessageError = [];
 
   // states login
   bool _isLogin = true;
   bool _isActive = false;
   bool _isLogging = false;
 
-  // page components
-  int _pageScreen = 1;
-
   // states register
   String _name, _email, _nik, _noHp;
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
   bool _nameValidation = false;
   bool _emailValidation = false;
   bool _nikValidation = false;
@@ -67,15 +59,13 @@ class _LoginPage extends State<LoginPage> {
   }
 
   void _onFocusChange(){
-    if (_isLogin) {
-      setState(() {
+    setState(() {
+      if (_isLogin) {
         _isActive = _focusPassword.hasFocus || _focusUsername.hasFocus ? true : false;
-      });
-    } else {
-      setState(() {
+      } else {
         _isActive = _focusName.hasFocus || _focusEmail.hasFocus || _focusNIK.hasFocus || _focusHP.hasFocus || _focusUsername.hasFocus || _focusPassword.hasFocus ? true : false;
-      });
-    }
+      }
+    });
   }
 
   // end check text field
@@ -90,52 +80,168 @@ class _LoginPage extends State<LoginPage> {
     WebService webService = Provider.of<WebService>(context);
 
     // methods
+
+    // function register call
+    var doRegister = () {
+      setState(() {
+        _isLogging = true;
+        _isActive = false;
+      });
+
+      final Future<Map<String, dynamic>> response = webService.register(name: _name, email: _email, nik: _nik, phone: _noHp, username: _username, password: _password);
+      response.then((res) {
+        print([res, 'ini response di doregister']);
+
+        if (res['status']) {
+          successDialog(context, res['message'].toString(),
+            title: "Register Sukses"
+          );
+        } else {
+          errorDialog(context, res['message'].toString(),
+            title: "Register Gagal",
+          );
+        }
+
+        setState(() {
+          _isLogging = false;
+          _isLogin = true;
+        });
+      });
+    };
+
     // Login function when pressed
     var doLogin = () {
-      print([_email, _password, _name, _noHp, _nik, _username]);
+      setState(() {
+        _isLogging = true;
+        _isActive = false;
+      });
 
-      if (_isLogin) {
+      final Future<Map<String, dynamic>> successfulMessage = webService.signIn(username: _username, password: _password);
+
+      successfulMessage.then((response) {
+        if (response['status']) {
+          setState(() {
+            _isLogging = false;
+          });
+          User user = response['user'];
+          Provider.of<UserProvider>(context, listen: false).setUser(user);
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          setState(() {
+            _isLogging = false;
+          });
+
+          errorDialog(context, response['message'].toString(),
+            title: "Login Gagal"
+          );
+        }
+      });
+    };
+
+    void registerWrappingFunction() {
+      if(_usernameValidation || _passwordValidation || _nameValidation || _emailValidation || _nikValidation || _noHpValidation) {
+        String showErrorMessage = "";
+
         setState(() {
-          _isLogging = true;
-          _isActive = false;
-        });
-        final Future<Map<String, dynamic>> successfulMessage =
-        webService.signIn(username: _username, password: _password);
-
-        successfulMessage.then((response) {
-          print([response, "ini response di do login"]);
-          if (response['status']) {
-            setState(() {
-              _isLogging = false;
-            });
-            User user = response['user'];
-            Provider.of<UserProvider>(context, listen: false).setUser(user);
-            Navigator.pushReplacementNamed(context, '/home');
-          } else {
-            setState(() {
-              _isLogging = false;
-            });
-            Flushbar(
-              title: "Failed Login",
-              message: response['message'].toString(),
-              duration: Duration(seconds: 3),
-            ).show(context);
+          if(_usernameValidation) {
+            _validateMessageError.add("username at least 6 char");
+          }
+          if (_passwordValidation) {
+            _validateMessageError.add("password harus mengandung minimal 8 karakter, satu huruf besar, satu huruf kecil, satu angka, dan satu simbol.");
+          }
+          if (_nameValidation) {
+            _validateMessageError.add("masukan nama sesua ktp");
+          }
+          if (_emailValidation) {
+            _validateMessageError.add("email tidak valid");
+          }
+          if (_nikValidation) {
+            _validateMessageError.add("nik tidak valid");
+          }
+          if (_noHpValidation) {
+            _validateMessageError.add("no hp tidak valid");
           }
         });
+
+        _validateMessageError.asMap().forEach((index, value) {
+          showErrorMessage += "${1 + index }. $value.\n";
+        });
+
+        errorDialog(context, showErrorMessage,
+          title: "Register Gagal",
+          textAlign: TextAlign.start,
+          negativeText: "Coba Lagi",
+        );
       } else {
         confirmationDialog(
             context,
             """
-1. Ruli Ganteng
-2. Ruli itu pintar
-3. Ruli itu keren
-            """,
+Performing hot restart...
+Syncing files to device Android SDK built for x86...
+Restarted application in 2,772ms.
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
+I/flutter (32573): ini vaaal>>>>>>><<<<
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
+W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
+I/flutter (32573): tidaaaaaak
+Performing hot restart...
+Syncing files to device Android SDK built for x86...
+Restarted application in 2,772ms.
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
+I/flutter (32573): ini vaaal>>>>>>><<<<
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
+W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
+I/flutter (32573): tidaaaaaak
+Performing hot restart...
+Syncing files to device Android SDK built for x86...
+Restarted application in 2,772ms.
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
+I/flutter (32573): ini vaaal>>>>>>><<<<
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
+W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
+I/flutter (32573): tidaaaaaak
+Performing hot restart...
+Syncing files to device Android SDK built for x86...
+Restarted application in 2,772ms.
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
+I/flutter (32573): ini vaaal>>>>>>><<<<
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
+I/flutter (32573): [null, ini default]
+W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
+W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
+W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
+I/flutter (32573): tidaaaaaak
+                  """,
             title: "Syarat dan Ketentuan!",
             textAlign: TextAlign.center,
             positiveText: 'Setuju',
             positiveAction: () {
-              print("JANCUKk");
-              print([_name, _email, _nik, _noHp, _username, _password]);
+              doRegister();
             },
             negativeText: "Tidak",
             negativeAction: () {
@@ -145,9 +251,29 @@ class _LoginPage extends State<LoginPage> {
             showNeutralButton: false
         );
       }
-    };
+    }
 
     // validation username and password
+    bool validatePassword({String password}) {
+      RegExp pattern = RegExp(r"^(?:(?=.*?[A-Z])(?:(?=.*?[0-9])(?=.*?[-!@#$%^&*()_[\]{},.<>+=])|(?=.*?[a-z])(?:(?=.*?[0-9])|(?=.*?[-!@#$%^&*()_[\]{},.<>+=])))|(?=.*?[a-z])(?=.*?[0-9])(?=.*?[-!@#$%^&*()_[\]{},.<>+=]))[A-Za-z0-9!@#$%^&*()_[\]{},.<>+=-]{8,20}$");
+      return !pattern.hasMatch(password);
+    }
+
+    bool validateEmail({String email}) {
+      RegExp pattern = RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+      return !pattern.hasMatch(email);
+    }
+
+    bool validateNIK({String nik}) {
+      RegExp pattern = RegExp(r"^[0-9]{16,22}$");
+      return !pattern.hasMatch(nik);
+    }
+
+    bool validatePhone({String phone}) {
+      RegExp pattern = RegExp(r"^0[1-9]{1}[0-9]{10,14}$");
+      return !pattern.hasMatch(phone);
+    }
+
     void validation ({TypeField type, String value}) {
       setState(() {
         switch (type) {
@@ -157,7 +283,7 @@ class _LoginPage extends State<LoginPage> {
             break;
           case TypeField.password:
             _password = value;
-            _passwordValidation = _password.length >= 8 ? false : true;
+            _passwordValidation = validatePassword(password: value);
             break;
           case TypeField.name:
             _name = value;
@@ -165,15 +291,15 @@ class _LoginPage extends State<LoginPage> {
             break;
           case TypeField.email:
             _email = value;
-            //_usernameValidation = _username.length >= 6 ? false : true;
+            _emailValidation = validateEmail(email: value);
             break;
           case TypeField.nik:
             _nik = value;
-            //_usernameValidation = _username.length >= 6 ? false : true;
+            _nikValidation = validateNIK(nik: value);
             break;
           case TypeField.noHp:
             _noHp = value;
-            //_usernameValidation = _username.length >= 6 ? false : true;
+            _noHpValidation = validatePhone(phone: value);
             break;
         }
       });
@@ -218,12 +344,12 @@ class _LoginPage extends State<LoginPage> {
           setState(() {
             _isActive = true;
           });
-          print(_isActive);
+          registerWrappingFunction();
         }
       },
       textCapitalization: TextCapitalization.none,
       keyboardType: TextInputType.text,
-      errorMessage: 'password at least 8 char',
+      errorMessage: "password harus mengandung minimal 8 karakter, satu huruf besar, satu huruf kecil, satu angka, dan satu simbol.",
       isError: _passwordValidation,
     );
 
@@ -305,88 +431,11 @@ class _LoginPage extends State<LoginPage> {
               borderRadius: BorderRadius.circular(20),
               side: BorderSide(color: Colors.black)
           ),
-          onPressed: () {
+          onPressed: () async {
             if (_isLogin) {
               doLogin();
             } else {
-              confirmationDialog(
-                  context,
-                  """
-Performing hot restart...
-Syncing files to device Android SDK built for x86...
-Restarted application in 2,772ms.
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
-I/flutter (32573): ini vaaal>>>>>>><<<<
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
-W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
-I/flutter (32573): tidaaaaaak
-Performing hot restart...
-Syncing files to device Android SDK built for x86...
-Restarted application in 2,772ms.
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
-I/flutter (32573): ini vaaal>>>>>>><<<<
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
-W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
-I/flutter (32573): tidaaaaaak
-Performing hot restart...
-Syncing files to device Android SDK built for x86...
-Restarted application in 2,772ms.
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
-I/flutter (32573): ini vaaal>>>>>>><<<<
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
-W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
-I/flutter (32573): tidaaaaaak
-Performing hot restart...
-Syncing files to device Android SDK built for x86...
-Restarted application in 2,772ms.
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
-I/flutter (32573): ini vaaal>>>>>>><<<<
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
-W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
-I/flutter (32573): tidaaaaaak
-                  """,
-                  title: "Syarat dan Ketentuan!",
-                  textAlign: TextAlign.center,
-                  positiveText: 'Setuju',
-                  positiveAction: () {
-                    print("JANCUKk");
-                    print([_name, _email, _nik, _noHp, _username, _password]);
-                  },
-                  negativeText: "Tidak",
-                  negativeAction: () {
-                    print("tidaaaaaak");
-                  },
-                  confirmationText: "saya setuju atas semua pernyataan tsb..",
-                  showNeutralButton: false
-              );
+              registerWrappingFunction();
             }
           },
         )
@@ -397,10 +446,6 @@ I/flutter (32573): tidaaaaaak
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 5),
-              child: textLoginOrRegister,
-            ),
             Padding(
               padding: EdgeInsets.only(top: 15.0),
               child: usernameField,
@@ -416,6 +461,18 @@ I/flutter (32573): tidaaaaaak
           ],
         ),
       ),
+    );
+
+    Column loginFields = Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 5),
+          child: textLoginOrRegister,
+        ),
+        Expanded(
+          child: loginOrRegister,
+        )
+      ],
     );
 
     // register components
@@ -466,7 +523,7 @@ I/flutter (32573): tidaaaaaak
     final nikField = CustomTextFields(
       textInputAction: TextInputAction.next,
       isError: _nikValidation,
-      errorMessage: 'masukan NIK anda',
+      errorMessage: 'masukan NIK anda yang valid',
       keyboardType: TextInputType.number,
       textCapitalization: TextCapitalization.none,
       autoCorrect: false,
@@ -487,7 +544,7 @@ I/flutter (32573): tidaaaaaak
     final noHPField = CustomTextFields(
       textInputAction: TextInputAction.next,
       isError: _noHpValidation,
-      errorMessage: 'no hp tidak valid',
+      errorMessage: 'no hp tidak valid, 08xxxxxxxxxx',
       keyboardType: TextInputType.phone,
       textCapitalization: TextCapitalization.none,
       autoCorrect: false,
@@ -535,8 +592,8 @@ I/flutter (32573): tidaaaaaak
               child: passwordField,
             ),
             Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: buttonSignInOrSignUp
+                padding: EdgeInsets.only(top: 20.0),
+                child: buttonSignInOrSignUp
             )
           ],
         ),
@@ -560,7 +617,7 @@ I/flutter (32573): tidaaaaaak
     AnimatedContainer fields = AnimatedContainer(
       duration: Duration(milliseconds: 1500),
       curve: Curves.ease,
-      child: _isLogin ? loginOrRegister : registerFields,
+      child: _isLogin ? loginFields : registerFields,
       decoration: BoxDecoration(
           color: Colors.amberAccent,
           borderRadius: new BorderRadius.only(

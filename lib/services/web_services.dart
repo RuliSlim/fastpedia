@@ -21,6 +21,7 @@ class WebService with ChangeNotifier {
   static const baseUrl = "http://192.168.100.11:8000/fast-mobile";
   static const loginUrl = "$baseUrl/login/";
   static const registerUrl = "$baseUrl/register-mobile/";
+  static const updateUrl = "$baseUrl/update-user-mobile/";
 
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredStatus = Status.NotRegistered;
@@ -104,7 +105,7 @@ class WebService with ChangeNotifier {
       );
 
       final responseData = response.data;
-      final SuccessRegister user = SuccessRegister.fromJson(responseData);
+      final SuccessRegisterAndUpdate user = SuccessRegisterAndUpdate.fromJson(responseData);
 
       _loggedInStatus = Status.LoggedIn;
       notifyListeners();
@@ -117,6 +118,89 @@ class WebService with ChangeNotifier {
         _loggedInStatus = Status.NotLoggedIn;
         notifyListeners();
         result = {'status': false, 'message': error.message};
+      } else {
+        _loggedInStatus = Status.NotLoggedIn;
+        notifyListeners();
+        result = {'status': false, 'message': 'Server is on maintenance'};
+      }
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> update({String name, String email, String nik, String phone}) async {
+    var result;
+
+    try {
+      final Map<String, dynamic> updateData = {
+        'name': name,
+        'email': email,
+        'id_number': nik,
+        'phone': phone,
+        'referral_by': 24
+      };
+
+      print([updateData, '<<<<<<<<SADSDSA']);
+
+      _loggedInStatus = Status.Authenticating;
+      notifyListeners();
+
+      final token = await UserPreferences().getToken();
+      print([token, '<<<<<<<<<<<<']);
+
+      final response = await dio.post(
+          updateUrl,
+          data: jsonEncode(updateData),
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': 'Token $token'
+            },
+          )
+      );
+
+      final responseData = response.data;
+      final SuccessRegisterAndUpdate user = SuccessRegisterAndUpdate.fromJson(responseData);
+
+      _loggedInStatus = Status.LoggedIn;
+      notifyListeners();
+
+      final oldUser = await UserPreferences().getUser();
+
+      oldUser.email = email;
+      oldUser.phone = phone;
+
+      final updateUser = await UserPreferences().saveUser(oldUser);
+
+      result = {'status': true, 'message': user.message, 'user': user};
+    } on DioError catch (e) {
+      print([e.response, e.response.data, "<<<<<<<<<<?"]);
+      if (e.response.statusCode == 400) {
+        final SerializerHandling error = SerializerHandling.fromJson(e.response.data);
+
+        _loggedInStatus = Status.NotLoggedIn;
+        notifyListeners();
+
+        List<String> messages = [];
+
+        if (error.email != null) {
+          messages.add("email sudah terdaftar");
+        }
+
+        if (error.phone != null) {
+          messages.add("no hp sudah terdaftar");
+        }
+
+        if (error.password != null) {
+          messages.add("password tidak valid");
+        }
+
+        String showErrorMessage = "";
+
+        messages.asMap().forEach((index, value) {
+          showErrorMessage += "${1 + index }. $value.\n";
+        });
+
+        result = {'status': false, 'message': showErrorMessage};
       } else {
         _loggedInStatus = Status.NotLoggedIn;
         notifyListeners();

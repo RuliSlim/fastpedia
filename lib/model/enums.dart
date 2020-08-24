@@ -1,6 +1,7 @@
 enum TypeField {
   username,
   password,
+  passwordNew,
   name,
   email,
   nik,

@@ -1,13 +1,14 @@
+import 'package:commons/commons.dart';
 import 'package:fastpedia/components/custom_textfield.dart';
-import 'package:fastpedia/components/tab_bar.dart';
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/enums.dart';
 import 'package:fastpedia/model/user.dart';
-import 'package:fastpedia/screens/discover_video.dart';
 import 'package:fastpedia/services/user_preferences.dart';
+import 'package:fastpedia/services/validation.dart';
+import 'package:fastpedia/services/web_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:motion_tab_bar/motiontabbar.dart';
+import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -22,6 +23,9 @@ class _ProfileState extends State<Profile> {
   // state components
   bool _isActive = false;
   bool _isMyVideo = false;
+  bool _isEditing = false;
+  bool _isReadOnly = true;
+  bool _changePassword = false;
 
   // focus fields;
   FocusNode _focusName = new FocusNode();
@@ -32,10 +36,12 @@ class _ProfileState extends State<Profile> {
   // check if text fields is active
   FocusNode _focusUsername = new FocusNode();
   FocusNode _focusPassword = new FocusNode();
+  FocusNode _focusPasswordNew = new FocusNode();
 
   // state value
   String _username;
-  String _password;
+  String _passwordOld;
+  String _passwordNew;
 
   String _name;
   String _email;
@@ -45,6 +51,7 @@ class _ProfileState extends State<Profile> {
   // states validation;
   bool _usernameValidation = false;
   bool _passwordValidation = false;
+  bool _passwordValidationNew = false;
   bool _nameValidation = false;
   bool _emailValidation = false;
   bool _nikValidation = false;
@@ -75,6 +82,7 @@ class _ProfileState extends State<Profile> {
     // focus comp
     _focusUsername.addListener(_onFocusChange);
     _focusPassword.addListener(_onFocusChange);
+    _focusPasswordNew.addListener(_onFocusChange);
 
     // register components focus
     _focusName.addListener(_onFocusChange);
@@ -85,15 +93,42 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    print(ModalRoute.of(context).settings.name);
+    // PROVIDERS
+    WebService webService = Provider.of<WebService>(context);
+    //
 
-    AppBar appBar = AppBar(
-      backgroundColor: Colors.amberAccent,
-      elevation: 0,
-      centerTitle: true,
-      title: Text('Profile'),
-    );
+    // METHODS
+    // change to edit
+    void _changeToEdit() {
+      setState(() {
+        _isEditing = true;
+        _isReadOnly = false;
+      });
+    }
+    //
 
+    // do update
+    void _updateFunction() {
+      setState(() {
+        _isReadOnly = true;
+        _isEditing = false;
+        _changePassword = false;
+      });
+
+      final Future<Map<String, dynamic>> server = webService.update(name: _name, email: _email, phone: _noHp, nik: _nik);
+      server.then((response) {
+        print([response, 'SADSADSMA>DSAMD>SAMD>SAM>DMS']);
+        if (response['status']) {
+          successDialog(context, response['message']);
+        } else {
+          errorDialog(context, response['message']);
+        }
+      });
+
+      getUsername();
+    }
+    //
+    
     Row profilePicture = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -133,24 +168,11 @@ class _ProfileState extends State<Profile> {
             _changeInfoOrVideos(type: InfoVideos.info);
           },
         ),
-        Text("|"),
-        FlatButton(
-          child: Text("My Videos",
-            style: TextStyle(
-                color: _isMyVideo ? Colors.white : Colors.grey,
-                fontWeight: FontWeight.w900,
-                fontSize: 20
-            ),
-          ),
-          onPressed: () {
-            _changeInfoOrVideos(type: InfoVideos.videos);
-          },
-        )
       ],
     );
 
     // register components
-    final nameField = CustomTextFields(
+    final nameField = CustomTextFieldsSecondary(
       textInputAction: TextInputAction.next,
       isError: _nameValidation,
       errorMessage: 'masukan nama sesuai ktp',
@@ -174,7 +196,7 @@ class _ProfileState extends State<Profile> {
       },
     );
 
-    final emailField = CustomTextFields(
+    final emailField = CustomTextFieldsSecondary(
       textInputAction: TextInputAction.next,
       isError: _emailValidation,
       errorMessage: 'email is invalid',
@@ -188,7 +210,7 @@ class _ProfileState extends State<Profile> {
       icon: Icon(Icons.email),
       secret: false,
       initialValue: _email,
-      readOnly: true,
+      readOnly: _isReadOnly,
       onFiledSubmitted: (val) {
         _focusEmail.unfocus();
         FocusScope.of(context).requestFocus(_focusNIK);
@@ -198,7 +220,31 @@ class _ProfileState extends State<Profile> {
       },
     );
 
-    final nikField = CustomTextFields(
+    final emailFieldEdit = CustomTextFields(
+      textInputAction: TextInputAction.next,
+      isError: _emailValidation,
+      errorMessage: 'email is invalid',
+      keyboardType: TextInputType.emailAddress,
+      textCapitalization: TextCapitalization.none,
+      autoCorrect: false,
+      focusNode: _focusEmail,
+      label: 'email',
+      hintText: 'masukan email anda',
+      width: 80,
+      icon: Icon(Icons.email),
+      secret: false,
+      initialValue: _email,
+      readOnly: _isReadOnly,
+      onFiledSubmitted: (val) {
+        _focusEmail.unfocus();
+        FocusScope.of(context).requestFocus(_focusNIK);
+      },
+      onChanged: (val) {
+        validation(value: val, type: TypeField.email);
+      },
+    );
+
+    final nikField = CustomTextFieldsSecondary(
       textInputAction: TextInputAction.next,
       isError: _nikValidation,
       errorMessage: 'masukan NIK anda',
@@ -221,7 +267,7 @@ class _ProfileState extends State<Profile> {
       },
     );
 
-    final noHPField = CustomTextFields(
+    final noHPField = CustomTextFieldsSecondary(
       textInputAction: TextInputAction.next,
       isError: _noHpValidation,
       errorMessage: 'no hp tidak valid',
@@ -234,7 +280,7 @@ class _ProfileState extends State<Profile> {
       icon: Icon(Icons.phone),
       secret: false,
       initialValue: _noHp,
-      readOnly: true,
+      readOnly: _isReadOnly,
       onFiledSubmitted: (val) {
         _focusHP.unfocus();
         FocusScope.of(context).requestFocus(_focusUsername);
@@ -244,11 +290,72 @@ class _ProfileState extends State<Profile> {
       },
     );
 
+    final noHPFieldEdit = CustomTextFields(
+      textInputAction: TextInputAction.next,
+      isError: _noHpValidation,
+      errorMessage: 'no hp tidak valid',
+      keyboardType: TextInputType.phone,
+      textCapitalization: TextCapitalization.none,
+      autoCorrect: false,
+      focusNode: _focusHP,
+      label: 'phone number',
+      width: 80,
+      icon: Icon(Icons.phone),
+      secret: false,
+      initialValue: _noHp,
+      readOnly: _isReadOnly,
+      onFiledSubmitted: (val) {
+        _focusHP.unfocus();
+        FocusScope.of(context).requestFocus(_focusUsername);
+      },
+      onChanged: (val) {
+        validation(value: val, type: TypeField.noHp);
+      },
+    );
+
+    final oldPassword = CustomTextFields(
+      textInputAction: TextInputAction.done,
+      secret: true,
+      hintText: 'Masukan Password Lama',
+      icon: Icon(Icons.lock),
+      width: 80,
+      label: 'password lama',
+      onChanged: (val) => validation(type: TypeField.password, value: val),
+      focusNode: _focusPassword,
+      autoCorrect: false,
+      onFiledSubmitted: (val) {
+
+      },
+      textCapitalization: TextCapitalization.none,
+      keyboardType: TextInputType.text,
+      errorMessage: "password harus mengandung minimal 8 karakter, satu huruf besar, satu huruf kecil, satu angka, dan satu simbol.",
+      isError: _passwordValidation,
+    );
+
+    final newPassword = CustomTextFields(
+      textInputAction: TextInputAction.done,
+      secret: true,
+      hintText: 'masukan password baru',
+      icon: Icon(Icons.lock),
+      width: 80,
+      label: 'password baru',
+      onChanged: (val) => validation(type: TypeField.passwordNew, value: val),
+      focusNode: _focusPasswordNew,
+      autoCorrect: false,
+      onFiledSubmitted: (val) {
+
+      },
+      textCapitalization: TextCapitalization.none,
+      keyboardType: TextInputType.text,
+      errorMessage: "password harus mengandung minimal 8 karakter, satu huruf besar, satu huruf kecil, satu angka, dan satu simbol.",
+      isError: _passwordValidationNew,
+    );
+
     ButtonTheme updateOrInsertVideo = ButtonTheme(
       minWidth: Responsive.width(80, context),
       child: RaisedButton(
         child: Text(
-          _isMyVideo ? "Add Video" : "Save Info",
+          _isMyVideo ? "Add Video" : _isEditing ? "Update" : "Edit",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w900,
@@ -263,7 +370,24 @@ class _ProfileState extends State<Profile> {
             borderRadius: BorderRadius.circular(20),
             side: BorderSide(color: Colors.black)
         ),
+        onPressed: () {
+          _isMyVideo ? null : _isEditing ? _updateFunction() : _changeToEdit();
+        },
       ),
+    );
+
+    FlatButton changePassword = FlatButton(
+      child: Text('ganti password',
+        style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 20,
+        ),
+      ),
+      onPressed: () {
+        setState(() {
+          _changePassword = true;
+        });
+      },
     );
 
     SingleChildScrollView infoFields = SingleChildScrollView(
@@ -273,19 +397,27 @@ class _ProfileState extends State<Profile> {
           children: <Widget> [
             Padding(
               padding: EdgeInsets.only(top: 15),
-              child: nameField,
+              child: _isEditing ? null : nameField,
             ),
             Padding(
               padding: EdgeInsets.only(top: 10),
-              child: emailField,
+              child: _isEditing ? emailFieldEdit : emailField,
             ),
             Padding(
               padding: EdgeInsets.only(top: 10),
-              child: nikField,
+              child: _isEditing ? null : nikField,
             ),
             Padding(
               padding: EdgeInsets.only(top: 10),
-              child: noHPField,
+              child: _isEditing ? noHPFieldEdit : noHPField,
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: _isEditing ? 10 : 0),
+              child: _isEditing ? _changePassword ? oldPassword : changePassword : null,
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: _isEditing ? 10 : 0),
+              child: _isEditing ? _changePassword ? newPassword : null : null,
             ),
             Padding(
               padding: EdgeInsets.only(top: 20),
@@ -354,6 +486,8 @@ class _ProfileState extends State<Profile> {
   _changeInfoOrVideos({InfoVideos type}) {
     setState(() {
       _isActive = true;
+      _isEditing = false;
+      _changePassword = false;
       switch (type) {
         case InfoVideos.videos:
           _isMyVideo = true;
@@ -370,7 +504,7 @@ class _ProfileState extends State<Profile> {
 
     } else {
       setState(() {
-        _isActive = _focusName.hasFocus || _focusEmail.hasFocus || _focusNIK.hasFocus || _focusHP.hasFocus || _focusUsername.hasFocus || _focusPassword.hasFocus ? true : false;
+        _isActive = _focusName.hasFocus || _focusEmail.hasFocus || _focusNIK.hasFocus || _focusHP.hasFocus || _focusUsername.hasFocus || _focusPassword.hasFocus || _focusPasswordNew.hasFocus ? true : false;
       });
     }
   }
@@ -383,8 +517,12 @@ class _ProfileState extends State<Profile> {
           _usernameValidation = _username.length >= 6 ? false : true;
           break;
         case TypeField.password:
-          _password = value;
-          _passwordValidation = _password.length >= 8 ? false : true;
+          _passwordOld = value;
+          _passwordValidation = validatePassword(password: value);
+          break;
+        case TypeField.passwordNew:
+          _passwordNew = value;
+          _passwordValidationNew = validatePassword(password: value);
           break;
         case TypeField.name:
           _name = value;
@@ -392,21 +530,18 @@ class _ProfileState extends State<Profile> {
           break;
         case TypeField.email:
           _email = value;
-          //_usernameValidation = _username.length >= 6 ? false : true;
+          _emailValidation = validateEmail(email: value);
           break;
         case TypeField.nik:
           _nik = value;
-          //_usernameValidation = _username.length >= 6 ? false : true;
+          _nikValidation = validateNIK(nik: value);
           break;
         case TypeField.noHp:
           _noHp = value;
-          //_usernameValidation = _username.length >= 6 ? false : true;
+          _noHpValidation = validatePhone(phone: value);
           break;
       }
     });
   }
 
 }
-
-//@override
-//_DashBoardState createState() => _DashBoardState();

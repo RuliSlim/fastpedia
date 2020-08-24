@@ -52,13 +52,27 @@ class SendRegisterUser {
   }
 }
 
-class SuccessRegister {
+class SendUpdateUser {
+  String name;
+  String email;
+  String nik;
+  String phone;
+
+  SendUpdateUser(String name, String email, String nik, String phone) {
+    this.name = name;
+    this.email = email;
+    this.nik = nik;
+    this.phone = phone;
+  }
+}
+
+class SuccessRegisterAndUpdate {
   String message;
 
-  SuccessRegister({this.message});
+  SuccessRegisterAndUpdate({this.message});
 
-  factory SuccessRegister.fromJson(Map<String, dynamic> json) {
-    return SuccessRegister(
+  factory SuccessRegisterAndUpdate.fromJson(Map<String, dynamic> json) {
+    return SuccessRegisterAndUpdate(
       message: json['message']
     );
   }

@@ -194,22 +194,22 @@ class _CustomTextFieldsStateSecondary extends State<CustomTextFieldsSecondary> {
               },
             ) : null,
             labelText: widget.label,
-            border: new OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(
-                  style: BorderStyle.solid,
-                  color: Colors.black,
-                  width: 3
-              ),
-            ),
-            focusedBorder: new OutlineInputBorder(
+//            border: new OutlineInputBorder(
+//              borderRadius: BorderRadius.circular(20),
+//              borderSide: BorderSide(
+//                  style: BorderStyle.solid,
+//                  color: Colors.black,
+//                  width: 3
+//              ),
+//            ),
+            focusedBorder: !widget.readOnly ? new OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(
                     style: BorderStyle.solid,
                     color: Colors.green,
                     width: 3
                 )
-            ),
+            ) : null,
             hintStyle: TextStyle(
               color: Colors.red,
               fontSize: 12,

@@ -7,16 +7,11 @@ import 'package:fastpedia/services/user_preferences.dart';
 import 'package:fastpedia/services/user_provider.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Permission.notification.request();
-  await Permission.mediaLibrary.request();
-  await Permission.camera.request();
-  await Permission.microphone.request();
 
   runApp(MyApp());
 }

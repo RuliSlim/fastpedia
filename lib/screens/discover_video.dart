@@ -1,9 +1,13 @@
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/user.dart';
+import 'package:fastpedia/model/video.dart';
 import 'package:fastpedia/services/user_preferences.dart';
+import 'package:fastpedia/services/web_services.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:hexcolor/hexcolor.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 
 import 'package:smooth_star_rating/smooth_star_rating.dart';
@@ -21,20 +25,35 @@ class WatchVideo extends StatefulWidget {
 
 class _WatchVideoState extends State<WatchVideo> {
   // States
-  Future userFuture;
-  Future<User> getUserData() => UserPreferences().getUser();
-  String urlVideo = 'https://m.youtube.com/watch?v=x62eLEaRWo8';
-  bool isDone = false;
+  String _urlVideo;
+  bool _isDone = false;
 
   // appWebViewControoler
   InAppWebViewController _inAppWebViewController;
 
   // dataDom
-  String isSubscribe;
+  String _isSubscribe;
+  String _isSubscribe2;
+  String _isSubscribe3;
+
   Future<String> getDom () async {
     String data = await _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("ytm-subscribe-button-renderer")[0].childNodes[0].childNodes[0].childNodes[0].getAttribute("aria-pressed");');
+    String data2 = await _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("button.c3-material-button-button")[5].attributes[2].nodeValue;');
+    String data3 = await _inAppWebViewController.evaluateJavascript(source: '''
+    function result() {
+      var data = document.querySelectorAll("button.c3-material-button-button")[5].innerText;
+      if (data == "SUBSCRIBE") {
+        return "SUBSCRIBE";
+      } else {
+        return "TAEK";
+      }
+    }    
+    result();
+    ''');
     setState(() {
-      isSubscribe = data;
+      _isSubscribe = data;
+      _isSubscribe2 = data2;
+      _isSubscribe3 = data3;
     });
     return data;
   }
@@ -42,15 +61,21 @@ class _WatchVideoState extends State<WatchVideo> {
   // countdown timer;
   Timer _timerCheck;
   int _time = 10;
-  bool isDoneLoadWeb = false;
-  bool isPlayingVideo = false;
+  bool _isDoneLoadWeb = false;
+  bool _isPlayingVideo = false;
+  
+  // data video;
+  DataVideo _dataVideo;
+  bool _status;
+  String _message;
+  bool _isLoading = true;
 
   // rating for videos
   double _rating = 3.0;
   String _comments = "Cukup bagus!";
 
   void countDown() {
-    if (isPlayingVideo && _timerCheck.isActive) {
+    if (_isPlayingVideo && _timerCheck.isActive) {
       var data = _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("button.icon-button").length');
       data.then((value) {
         if (value >= 20) {
@@ -66,11 +91,11 @@ class _WatchVideoState extends State<WatchVideo> {
   void checkIfPlay() {
     const oneSec = Duration(seconds: 1);
     _timerCheck = new Timer.periodic(oneSec, (timer) {
-      if (isDoneLoadWeb && _time >= 1) {
+      if (_isDoneLoadWeb && _time >= 1) {
         var player = _inAppWebViewController.evaluateJavascript(source: 'document.getElementById("movie_player").classList.contains("playing-mode");');
         player.then((value) {
           setState(() {
-            isPlayingVideo = value;
+            _isPlayingVideo = value;
           });
           countDown();
         });
@@ -80,9 +105,44 @@ class _WatchVideoState extends State<WatchVideo> {
     });
   }
 
+  void getData() async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      WebService webService = Provider.of<WebService>(context, listen: false);
+      Map<String, dynamic> response = await webService.getVideo();
+      _status = response['status'];
+
+      if (_status) {
+        _dataVideo = response['data'];
+
+        setState(() {
+          _urlVideo = _dataVideo.data.video;
+          _isDone = false;
+          _time = 10;
+        });
+
+        if (_timerCheck != null) {
+          _timerCheck.cancel();
+        }
+        if (_inAppWebViewController != null && _urlVideo != null) {
+          _inAppWebViewController.loadUrl(url: _urlVideo);
+        }
+      } else {
+
+        setState(() {
+          _message = response['message'];
+        });
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    getData();
   }
 
   @override
@@ -103,7 +163,7 @@ class _WatchVideoState extends State<WatchVideo> {
           height: Responsive.height(100, context),
           width: Responsive.width(100, context),
           child: InAppWebView(
-            initialUrl: urlVideo,
+            initialUrl: _urlVideo,
             initialHeaders: {},
             initialOptions: InAppWebViewGroupOptions(
                 crossPlatform: InAppWebViewOptions(
@@ -117,7 +177,7 @@ class _WatchVideoState extends State<WatchVideo> {
             onLoadStop: (InAppWebViewController controller, String url) {
               modifyDom();
               setState(() {
-                isDoneLoadWeb = true;
+                _isDoneLoadWeb = true;
               });
               checkIfPlay();
             },
@@ -135,43 +195,48 @@ class _WatchVideoState extends State<WatchVideo> {
       size: 30,
       filledIconData: Icons.star,
       halfFilledIconData: Icons.star,
-      allowHalfRating: true,
+      allowHalfRating: false,
+      color: Hexcolor("#0B8B53"),
       starCount: 5,
       spacing: 2.0,
       onRated: (double value) {
         setState(() {
+          _rating = value == 0 ? 1 : value;
           switch (value.round()) {
-            case 0:
+            case 1:
               _comments = "Tidak menarik..";
               break;
-            case 1:
+            case 2:
               _comments = "Kurang menarik..";
               break;
-            case 2:
+            case 3:
               _comments = "Cukup menarik..";
               break;
-            case 3:
+            case 4:
               _comments = "Menarik..";
               break;
-            case 4:
+            case 5:
               _comments = "Sangat menarik..";
               break;
             default:
-              _comments = "Sangat menarik sekali..";
+              _comments = "Tidak menarik";
               break;
           }
         });
       },
     );
 
-    Text comments = Text(_comments, style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900),);
+    Text comments = Text(_comments, style: TextStyle(
+        color: Hexcolor("#1E3B2A"),
+        fontWeight: FontWeight.w900,
+    ),);
 
     // box container
     AnimatedContainer containerReview = AnimatedContainer(
       duration: Duration(seconds: 1),
       curve: Curves.ease,
       decoration: BoxDecoration(
-          color: Colors.grey,
+          color: Hexcolor("#ADE7D6"),
           borderRadius: BorderRadius.only(
               topRight: Radius.circular(30),
               topLeft: Radius.circular(30)
@@ -187,9 +252,9 @@ class _WatchVideoState extends State<WatchVideo> {
               children: <Widget>[
                 Text("Tinggalkan Review",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900
+                      color: Hexcolor("#1E3B2A"),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 20
                   ),
                 )
               ],
@@ -232,29 +297,41 @@ class _WatchVideoState extends State<WatchVideo> {
       ),
     );
 
-
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 4,
-            child: inAppwebView,
-          ),
-          Expanded(
-            flex: 2,
-            child: containerReview,
-          )
-        ],
-      ),
-      floatingActionButton: _containerButton(),
-    );
+    if (!_isLoading) {
+      if (_status) {
+          return Scaffold(
+            body: Column(
+              children: <Widget>[
+                Expanded(
+                  flex: 4,
+                  child: inAppwebView,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: containerReview,
+                )
+              ],
+            ),
+            floatingActionButton: _containerButton(),
+          );
+      } else {
+        widget.onTimeAndSubSuccess();
+        return Scaffold(
+          body: Center(child: Text(_message)),
+        );
+      }
+    } else {
+      return Scaffold(
+        body: Text("WAITING"),
+      );
+    }
   }
 
   dynamic _containerButton() {
     if (_time > 0) {
       return _countDown();
     }
-    if (isDone && _time < 1) {
+    if (_isDone && _time < 1 && _dataVideo.sisa_nonton >= 1) {
       return _nextVideoButton();
     } else {
       return _subsAction();
@@ -279,21 +356,27 @@ class _WatchVideoState extends State<WatchVideo> {
       onPressed: () async {
         var result = getDom();
         result.then((value) {
-          if (isSubscribe == "false") {
+          if (_isSubscribe == "false" || _isSubscribe2 == "false" || _isSubscribe3 == "SUBSCRIBE") {
             Flushbar(
               title: 'Failed!',
               message: 'You Have To Subscribe!',
               duration: Duration(seconds: 3),
             ).show(context);
           } else {
-            Flushbar(
-              title: 'Congrats!',
-              message: 'You Earn Point!',
-              duration: Duration(seconds: 3),
-            ).show(context);
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+              WebService webService = Provider.of<WebService>(context, listen: false);
+              Map<String, dynamic> response = await webService.saveVideo(idVideo: _dataVideo.data.id, rating: _rating);
+              _status = response['status'];
+              Flushbar(
+                title: 'Congrats!',
+                message: response['message'],
+                duration: Duration(seconds: 3),
+              ).show(context);
+            });
+
             widget.onTimeAndSubSuccess();
             setState(() {
-              isDone = true;
+              _isDone = true;
             });
           }
         });
@@ -304,16 +387,17 @@ class _WatchVideoState extends State<WatchVideo> {
 
   FloatingActionButton _nextVideoButton() {
     return FloatingActionButton(
-      child: Icon(Icons.navigate_next),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text((_dataVideo.sisa_nonton - 1).toString()),
+          Icon(Icons.navigate_next),
+        ],
+      ),
       onPressed: () {
-        widget.onNextVideo();
-        setState(() {
-          urlVideo = 'https://m.youtube.com/watch?v=vlCgfLDeDwU';
-          isDone = false;
-          _time = 10;
-        });
         _timerCheck.cancel();
-        _inAppWebViewController.loadUrl(url: urlVideo);
+        widget.onNextVideo();
+        getData();
       },
     );
   }

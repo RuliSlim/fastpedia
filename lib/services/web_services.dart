@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:fastpedia/model/error_handling.dart';
+import 'package:fastpedia/model/points.dart';
 import 'package:fastpedia/model/user.dart';
+import 'package:fastpedia/model/video.dart';
 import 'package:fastpedia/services/user_preferences.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -18,12 +20,15 @@ enum Status {
 
 class WebService with ChangeNotifier {
   var dio = new Dio();
-  //static const baseUrl = "http://192.168.100.11:8000/fast-mobile";
-  static const baseUrl = "http://192.168.2.106:8000/fast-mobile";
+  static const baseUrl = "http://192.168.100.11:8000/fast-mobile";
+  //static const baseUrl = "http://192.168.2.106:8000/fast-mobile";
   static const loginUrl = "$baseUrl/login/";
   static const registerUrl = "$baseUrl/register-mobile/";
   static const updateUrl = "$baseUrl/update-user-mobile/";
   static const updatePasswordUrl = "$baseUrl/change-password-mobile/";
+  static const pointUrl = "$baseUrl/data-point/";
+  static const videosUrl = "$baseUrl/bank-video/";
+  static const saveVideoUrl = "$baseUrl/watch-video-to-convert-ads-point/";
 
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredStatus = Status.NotRegistered;
@@ -246,6 +251,117 @@ class WebService with ChangeNotifier {
       } else {
         _loggedInStatus = Status.NotLoggedIn;
         notifyListeners();
+        result = {'status': false, 'message': 'Server is on maintenance'};
+      }
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> getPoint() async {
+    var result;
+
+    try {
+      final token = await UserPreferences().getToken();
+
+      final response = await dio.get(
+          pointUrl,
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': 'Token $token'
+            },
+          )
+      );
+
+      final responseData = response.data;
+
+      final Points points = Points.fromJson(responseData);
+
+      result = {'status': true, "data": points};
+    } on DioError catch (e) {
+      if (e.response.statusCode == 406 || e.response.statusCode == 400) {
+        final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
+
+        result = {'status': false, 'message': error.message};
+      } else {
+
+        result = {'status': false, 'message': 'Server is on maintenance'};
+      }
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> getVideo() async {
+    var result;
+
+    try {
+      final token = await UserPreferences().getToken();
+
+      final response = await dio.get(
+          videosUrl,
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': 'Token $token'
+            },
+          )
+      );
+
+      final responseData = response.data;
+
+      print([responseData, "<<<<<<SAFSAFSA"]);
+
+      final DataVideo dataVideo = DataVideo.fromJson(responseData);
+
+      result = {'status': true, "data": dataVideo};
+    } on DioError catch (e) {
+      print([e.response.data, e.response.statusCode, "<<<<<<<<<<<<<?"]);
+      if (e.response.statusCode == 404 || e.response.statusCode == 400) {
+        final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
+
+        result = {'status': false, 'message': error.message};
+      } else {
+
+        result = {'status': false, 'message': 'Server is on maintenance'};
+      }
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> saveVideo({int idVideo, double rating}) async {
+    var result;
+
+    try {
+
+      final Map<String, dynamic> watchedVideo = {
+        'watcher': 24,
+        'video': idVideo,
+        'rating': rating.toInt()
+      };
+
+      final token = await UserPreferences().getToken();
+
+      final response = await dio.post(
+          saveVideoUrl,
+          data: jsonEncode(watchedVideo),
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': 'Token $token'
+            },
+          )
+      );
+
+      final responseData = response.data;
+      final SuccessRegisterAndUpdate message = SuccessRegisterAndUpdate.fromJson(responseData);
+
+      result = {'status': true, "message": message.message};
+    } on DioError catch (e) {
+      if (e.response.statusCode == 406 || e.response.statusCode == 400) {
+        final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
+
+        result = {'status': false, 'message': error.message};
+      } else {
         result = {'status': false, 'message': 'Server is on maintenance'};
       }
     }

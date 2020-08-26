@@ -71,6 +71,7 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
         readOnly: widget.readOnly ? widget.readOnly : false,
         decoration: InputDecoration(
             prefixIcon: widget.icon,
+            errorMaxLines: 5,
             suffixIcon: widget.label == "password" || widget.label == "password lama" || widget.label == "password baru" ? GestureDetector(
               child: Icon(
                 widget.isHidePassword ? Icons.visibility_off : Icons.visibility
@@ -105,7 +106,7 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
               fontWeight: FontWeight.w300,
             ),
             contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-            errorText: widget.isError ? widget.errorMessage : null
+            errorText: widget.isError ? widget.errorMessage : null,
         ),
       ),
     );
@@ -132,6 +133,7 @@ class CustomTextFieldsSecondary extends StatefulWidget{
   bool isError;
   String initialValue;
   bool readOnly;
+  FlatButton suffixButton;
 
   CustomTextFieldsSecondary({
     @required
@@ -153,7 +155,8 @@ class CustomTextFieldsSecondary extends StatefulWidget{
     this.autoFocus,
     this.isHidePassword = false,
     this.initialValue,
-    this.readOnly = false
+    this.readOnly = false,
+    this.suffixButton
   });
 
   @override
@@ -182,26 +185,9 @@ class _CustomTextFieldsStateSecondary extends State<CustomTextFieldsSecondary> {
         readOnly: widget.readOnly ? widget.readOnly : false,
         decoration: InputDecoration(
             prefixIcon: widget.icon,
-            suffixIcon: widget.label == "password" || widget.label == "password lama" || widget.label == "password baru" ? GestureDetector(
-              child: Icon(
-                  widget.isHidePassword ? Icons.visibility_off : Icons.visibility
-              ),
-              onTap: () {
-                setState(() {
-                  widget.isHidePassword = !widget.isHidePassword;
-                  widget.secret = !widget.secret;
-                });
-              },
-            ) : null,
+            errorMaxLines: 5,
+            suffixIcon: null == FlatButton ? widget.suffixButton : null,
             labelText: widget.label,
-//            border: new OutlineInputBorder(
-//              borderRadius: BorderRadius.circular(20),
-//              borderSide: BorderSide(
-//                  style: BorderStyle.solid,
-//                  color: Colors.black,
-//                  width: 3
-//              ),
-//            ),
             focusedBorder: !widget.readOnly ? new OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(

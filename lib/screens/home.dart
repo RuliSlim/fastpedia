@@ -1,12 +1,12 @@
+import 'package:fastpedia/screens/dashboard.dart';
 import 'package:fastpedia/screens/discover_video.dart';
 import 'package:fastpedia/screens/profile.dart';
 import 'package:fastpedia/screens/qr_scanner.dart';
 import 'package:flashy_tab_bar/flashy_tab_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:motion_tab_bar/MotionTabBarView.dart';
-import 'package:motion_tab_bar/MotionTabController.dart';
-import 'package:motion_tab_bar/motiontabbar.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,23 +14,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
-  String titleAppBar = 'Profile';
-  String tabSelected = 'Profile';
-  MotionTabController _myTabController;
+  String titleAppBar = 'Home';
+  String tabSelected = 'Home';
   bool isShown = true;
 
-  int _selectedIndex = 2;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _myTabController = MotionTabController(initialIndex: 2, vsync: this);
-    _myTabController.length = 3;
   }
 
   @override
   void dispose() {
-    _myTabController.dispose();
     super.dispose();
   }
 
@@ -39,18 +35,25 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
     // Method
     void onPressedTabBar (int value) {
       setState(() {
-        _myTabController.index = value;
         _selectedIndex = value;
         switch (value) {
-          case 0: {
+          case 0:
+            titleAppBar = "Home";
+            break;
+          case 1: {
             titleAppBar = 'Discover';
             isShown = false;
           }
           break;
-          case 1: {
+          case 2: {
+            titleAppBar = "QR Code";
             isShown = true;
           }
           break;
+          case 3:
+            titleAppBar = "History";
+            isShown = true;
+            break;
           default: {
             titleAppBar = 'Profile';
             isShown = true;
@@ -62,25 +65,9 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
 
     // Widgets
     AppBar appBar = AppBar(
-      title: Text(titleAppBar),
-      elevation: 0.0,
-      centerTitle: true,
-    );
-
-    MotionTabBar myMotionTabBar = MotionTabBar(
-      labels: [ 'Discover', 'QR', 'Profile' ],
-      tabSelectedColor: Colors.green,
-      tabIconColor: Colors.red,
-      initialSelectedTab: tabSelected,
-      textStyle: TextStyle(color: Colors.amberAccent),
-      onTabItemSelected: (int value) {
-        onPressedTabBar(value);
-      },
-      icons: [
-        Icons.youtube_searched_for,
-        Icons.scanner,
-        Icons.person
-      ],
+      title: Text(titleAppBar, style: TextStyle(color: Hexcolor("#1E3B2A")),),
+      centerTitle: false,
+      backgroundColor: Colors.white,
     );
 
     FlashyTabBar myFlashyTabBar = FlashyTabBar(
@@ -90,19 +77,52 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
       onItemSelected: (value) {
         onPressedTabBar(value);
       },
-      backgroundColor: Colors.amberAccent,
+      backgroundColor: Colors.white,
       items: [
         FlashyTabBarItem(
-          icon: Icon(Icons.youtube_searched_for),
-          title: Text("Discovery")
+            icon: Icon(
+              MaterialCommunityIcons.home,
+              color: Colors.black,
+            ),
+            title: Text("Home"),
+            activeColor: Hexcolor("#ADE7D6"),
+            inactiveColor: Hexcolor("#E8EBEA")
         ),
         FlashyTabBarItem(
-          icon: Icon(Icons.scanner),
-          title: Text("QR")
+            icon: Icon(
+              Icons.explore,
+              color: Colors.black,
+            ),
+            title: Text("Discovery"),
+            activeColor: Hexcolor("#ADE7D6"),
+            inactiveColor: Hexcolor("#E8EBEA")
         ),
         FlashyTabBarItem(
-          icon: Icon(Icons.person),
-          title: Text("Profile")
+            icon: Icon(
+              MaterialCommunityIcons.qrcode_scan,
+              color: Colors.black,
+            ),
+            title: Text("QR Code"),
+            activeColor: Hexcolor("#ADE7D6"),
+            inactiveColor: Hexcolor("#E8EBEA")
+        ),
+        FlashyTabBarItem(
+            icon: Icon(
+              MaterialIcons.history,
+              color: Colors.black,
+            ),
+            title: Text("History"),
+            activeColor: Hexcolor("#ADE7D6"),
+            inactiveColor: Hexcolor("#E8EBEA")
+        ),
+        FlashyTabBarItem(
+            icon: Icon(
+              MaterialIcons.person,
+              color: Colors.black,
+            ),
+            title: Text("Profile"),
+            activeColor: Hexcolor("#ADE7D6"),
+            inactiveColor: Hexcolor("#E8EBEA")
         )
       ],
     );
@@ -117,10 +137,13 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
     }
 
     void onTimeAndSubSuccess () {
-      setState(() {
-        isShown = true;
-        tabSelected = 'Discover';
-        _selectedIndex = 0;
+      WidgetsBinding.instance.addPostFrameCallback((_){
+        // Add Your Code here.
+        setState(() {
+          isShown = true;
+          tabSelected = 'Discover';
+          _selectedIndex = 1;
+        });
       });
     }
 
@@ -132,36 +155,27 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
 
     final bodyScreen = [
       Container(
+        child: Dashboard(),
+      ),
+      Container(
         child: WatchVideo(onTimeAndSubSuccess: onTimeAndSubSuccess, onNextVideo: onNextVideo),
       ),
       Container(
         child: ScreenScanner(),
       ),
       Container(
+        child: Text("History"),
+      ),
+      Container(
         child: Profile(),
       )
     ];
 
-    final oldBodyScreen = MotionTabBarView(
-      controller: _myTabController,
-      children: <Widget>[
-        Container(
-            child: WatchVideo(onTimeAndSubSuccess: onTimeAndSubSuccess, onNextVideo: onNextVideo)
-        ),
-        Container(
-          child: ScreenScanner(),
-        ),
-        Container(
-          child: Profile(),
-        ),
-      ],
-    );
-
     // TODO: implement build
     return Scaffold(
-      appBar: appBar,
-      bottomNavigationBar: tabBarShown(),
-      body: bodyScreen[_selectedIndex]
+        appBar: appBar,
+        bottomNavigationBar: tabBarShown(),
+        body: bodyScreen[_selectedIndex]
     );
   }
 }

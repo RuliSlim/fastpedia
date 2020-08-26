@@ -7,6 +7,7 @@ import 'package:fastpedia/services/user_provider.dart';
 import 'package:fastpedia/services/validation.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 
@@ -84,6 +85,11 @@ class _LoginPage extends State<LoginPage> {
 
     // function register call
     var doRegister = () {
+      if (_nameValidation || _emailValidation || _nikValidation || _noHpValidation || _usernameValidation || _passwordValidation || _name == null || _email == null || _nik == null || _noHp == null || _username == null || _password == null) {
+        errorDialog(context, "Form tidak valid!");
+        return;
+      }
+
       setState(() {
         _isLogging = true;
         _isActive = false;
@@ -93,7 +99,7 @@ class _LoginPage extends State<LoginPage> {
       response.then((res) {
         if (res['status']) {
           successDialog(context, res['message'].toString(),
-            title: "Register Sukses"
+              title: "Register Sukses"
           );
         } else {
           errorDialog(context, res['message'].toString(),
@@ -110,6 +116,11 @@ class _LoginPage extends State<LoginPage> {
 
     // Login function when pressed
     var doLogin = () {
+      if (_usernameValidation || _passwordValidation || _username == null || _password == null) {
+        errorDialog(context, "Form tidak valid!");
+        return;
+      }
+
       setState(() {
         _isLogging = true;
         _isActive = false;
@@ -131,7 +142,7 @@ class _LoginPage extends State<LoginPage> {
           });
 
           errorDialog(context, response['message'].toString(),
-            title: "Login Gagal"
+              title: "Login Gagal"
           );
         }
       });
@@ -342,69 +353,52 @@ I/flutter (32573): tidaaaaaak
 
     // ModernDesign
     Row textLoginOrRegister = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         FlatButton(
+          child: Icon(Icons.arrow_back),
           onPressed: () {
             setState(() {
+              _isActive = false;
               _isLogin = true;
             });
             _focusName.unfocus();
             _focusEmail.unfocus();
             _focusNIK.unfocus();
             _focusHP.unfocus();
+            _focusUsername.unfocus();
             _focusPassword.unfocus();
-            _focusUsername.requestFocus();
           },
-          child: Text('Login',
+        ),
+        FlatButton(
+          child: Text(_isLogin ? 'Login' : 'Register',
             style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 20,
-                color: _isLogin ? Colors.white : Colors.grey
+                color: Colors.black
             ),
           ),
         ),
-        Text('|'),
-        FlatButton(
-          onPressed: () {
-            setState(() {
-              _isLogin = false;
-            });
-            _focusUsername.unfocus();
-            _focusEmail.unfocus();
-            _focusNIK.unfocus();
-            _focusHP.unfocus();
-            _focusPassword.unfocus();
-            _focusName.requestFocus();
-          },
-          child: Text('Register',
-            style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 20,
-                color: _isLogin ? Colors.grey : Colors.white
-            ),
-          ),
-        )
       ],
     );
 
     ButtonTheme buttonSignInOrSignUp = ButtonTheme(
         minWidth: Responsive.width(80, context),
+        height: 56,
         child: RaisedButton(
           child: Text(
-            _isLogin ? 'Sign In' : ' Sign Up',
+            _isLogin ? 'Login' : 'Register',
             style: TextStyle(
-                fontSize: 20
+                fontSize: 26,
+                color: Colors.white
             ),
           ),
           padding: EdgeInsets.all(8.0),
-          textColor: Colors.white,
-          color: Colors.blue,
+          color: Hexcolor("#34DE34"),
           splashColor: Colors.green,
           animationDuration: Duration(seconds: 1),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: BorderSide(color: Colors.black)
+            borderRadius: BorderRadius.circular(20),
           ),
           onPressed: () async {
             if (_isLogin) {
@@ -421,10 +415,7 @@ I/flutter (32573): tidaaaaaak
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 15.0),
-              child: usernameField,
-            ),
+            usernameField,
             Padding(
               padding: EdgeInsets.only(top: 10.0),
               child: passwordField,
@@ -589,12 +580,78 @@ I/flutter (32573): tidaaaaaak
       ],
     );
 
+    Column buttonLoginRegister = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        ButtonTheme(
+          minWidth: Responsive.width(80, context),
+          height: 56,
+          child: RaisedButton(
+            child: Text(
+              "Login",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 20
+              ),
+            ),
+            padding: EdgeInsets.all(8),
+            textColor: Colors.white,
+            color: Hexcolor("#34DE34"),
+            splashColor: Colors.green,
+            animationDuration: Duration(seconds: 1),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(color: Hexcolor("#34DE34"))
+            ),
+            onPressed: () {
+              setState(() {
+                _isLogin = true;
+                _isActive = true;
+              });
+              FocusScope.of(context).requestFocus(_focusUsername);
+            },
+          ),
+        ),
+        ButtonTheme(
+          minWidth: Responsive.width(80, context),
+          height: 56,
+          child: RaisedButton(
+            child: Text(
+              "Register",
+              style: TextStyle(
+                  color: Hexcolor("#34DE34"),
+                  fontWeight: FontWeight.w900,
+                  fontSize: 20
+              ),
+            ),
+            padding: EdgeInsets.all(8),
+            color: Hexcolor("#F2FFF2"),
+            splashColor: Colors.green,
+            animationDuration: Duration(seconds: 1),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(color: Hexcolor("#34DE34"))
+            ),
+            onPressed: () {
+              setState(() {
+                _isLogin = false;
+                _isActive = true;
+              });
+              FocusScope.of(context).requestFocus(_focusName);
+            },
+          ),
+        )
+      ],
+    );
+
     AnimatedContainer fields = AnimatedContainer(
       duration: Duration(milliseconds: 1500),
       curve: Curves.ease,
-      child: _isLogin ? loginFields : registerFields,
+      child: _isActive ? _isLogin ? loginFields : registerFields : buttonLoginRegister,
+      width: Responsive.width(100, context),
       decoration: BoxDecoration(
-          color: Colors.amberAccent,
+          color: Hexcolor("#F2FFF2"),
           borderRadius: new BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30)
@@ -611,7 +668,7 @@ I/flutter (32573): tidaaaaaak
         children: <Widget>[
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(30.0),
+              padding: const EdgeInsets.all(50.0),
               child: Image(image: AssetImage('Fast-logo.png'),),
             ),
             flex: _isActive ? 1 : 3,
@@ -628,17 +685,7 @@ I/flutter (32573): tidaaaaaak
     return Scaffold(
         resizeToAvoidBottomInset: false,
         resizeToAvoidBottomPadding: false,
-        body: new GestureDetector(
-          child: _isLogging ? loading : modernDesign,
-          onTap: () {
-            _focusPassword.unfocus();
-            _focusUsername.unfocus();
-            _focusName.unfocus();
-            _focusEmail.unfocus();
-            _focusNIK.unfocus();
-            _focusHP.unfocus();
-          },
-        )
+        body: _isLogging ? loading : modernDesign
     );
   }
 }

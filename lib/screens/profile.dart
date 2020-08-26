@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:commons/commons.dart';
 import 'package:fastpedia/components/custom_textfield.dart';
 import 'package:fastpedia/main.dart';
@@ -8,6 +10,7 @@ import 'package:fastpedia/services/validation.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
@@ -18,7 +21,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   User userData;
-  String username;
+  String _username;
 
   // state components
   bool _isActive = false;
@@ -40,7 +43,6 @@ class _ProfileState extends State<Profile> {
   FocusNode _focusPasswordNew = new FocusNode();
 
   // state value
-  String _username;
   String _passwordOld;
   String _passwordNew;
 
@@ -50,24 +52,37 @@ class _ProfileState extends State<Profile> {
   String _noHp;
 
   // states validation;
-  bool _usernameValidation = false;
   bool _passwordValidation = false;
   bool _passwordValidationNew = false;
-  bool _nameValidation = false;
   bool _emailValidation = false;
-  bool _nikValidation = false;
   bool _noHpValidation = false;
+
+  // random color
+  int _colorIdx;
+  List<Color> _randomColor = [
+    Colors.black,
+    Colors.grey,
+    Colors.blue,
+    Colors.pinkAccent,
+    Colors.green,
+    Colors.yellow
+  ];
 
   void getUsername () async {
     User user = await UserPreferences().getUser();
     setState(() {
       userData = user;
-      username = user.username;
+      _username = user.username;
       _name = user.name;
       _email = user.email;
       _nik = user.nik;
       _noHp = user.phone;
     });
+  }
+
+  random(min, max){
+    var rn = new Random();
+    return min + rn.nextInt(max - min);
   }
 
   void logoutUser () {
@@ -78,6 +93,10 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     getUsername();
+
+    setState(() {
+      _colorIdx = random(0, _randomColor.length - 1);
+    });
 
     // focus comp
     _focusUsername.addListener(_onFocusChange);
@@ -139,8 +158,11 @@ class _ProfileState extends State<Profile> {
         _isLoading = true;
       });
 
-      if (_passwordValidationNew || _passwordValidation) {
+      if (_passwordValidationNew || _passwordValidation || _passwordOld == null || _passwordNew == null || _passwordNew.length <= 1 || _passwordOld.length <= 1) {
         errorDialog(context, "password tidak valid");
+        setState(() {
+          _isLoading = false;
+        });
         return null;
       }
 
@@ -170,27 +192,87 @@ class _ProfileState extends State<Profile> {
           ],
         )
     );
-    
-    Row profilePicture = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Column(
+
+    Padding profilePicture = Padding(
+      padding: EdgeInsets.all(20),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               CircleAvatar(
-                child: Icon(Icons.person),
+                child: Icon(
+                  Icons.person_pin,
+                  size: 50,
+                ),
+                radius: 30,
+                backgroundColor: _randomColor[_colorIdx],
               ),
-              Text('$username')
-            ]
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Text(
+                  '$_username',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 30
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
-      ],
+      )
     );
 
-    RaisedButton buttonLogOut = RaisedButton(
-      onPressed: () {
-        logoutUser();
-        Navigator.pushReplacementNamed(context, '/login');
-      },
-      child: Text('Logout'),
+//    Row profilePicture = Row(
+//      mainAxisAlignment: MainAxisAlignment.center,
+//      children: <Widget>[
+//        Column(
+//            children: <Widget>[
+//              CircleAvatar(
+//                child: Icon(Icons.person),
+//                radius: 40,
+//              ),
+//              Text(
+//                '$_username',
+//                style: TextStyle(
+//                    color: Hexcolor("#1E3B2A"),
+//                    fontWeight: FontWeight.w900,
+//                    fontSize: 20
+//                ),
+//              )
+//            ]
+//        ),
+//      ],
+//    );
+
+    ButtonTheme buttonLogOut = ButtonTheme(
+        minWidth: Responsive.width(60, context),
+        child: RaisedButton(
+          onPressed: () {
+            logoutUser();
+            Navigator.pushReplacementNamed(context, '/login');
+          },
+          child: Text(
+            'Logout',
+            style: TextStyle(
+                color: Hexcolor("#1E3B2A"),
+                fontWeight: FontWeight.w900,
+                fontSize: 20
+            ),
+          ),
+          padding: EdgeInsets.all(8),
+          textColor: Colors.white,
+          color: Hexcolor("#0B8B53"),
+          splashColor: Colors.green,
+          animationDuration: Duration(seconds: 1),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(color: Colors.black)
+          ),
+        )
     );
 
     // box container
@@ -198,9 +280,9 @@ class _ProfileState extends State<Profile> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         FlatButton(
-          child: Text("My Information",
+          child: Text("Infoku",
             style: TextStyle(
-                color: _isMyVideo ? Colors.grey : Colors.white,
+                color: Hexcolor("#1E3B2A"),
                 fontWeight: FontWeight.w900,
                 fontSize: 20
             ),
@@ -215,7 +297,7 @@ class _ProfileState extends State<Profile> {
     // register components
     final nameField = CustomTextFieldsSecondary(
       textInputAction: TextInputAction.next,
-      isError: _nameValidation,
+      isError: false,
       errorMessage: 'masukan nama sesuai ktp',
       keyboardType: TextInputType.text,
       textCapitalization: TextCapitalization.words,
@@ -254,7 +336,7 @@ class _ProfileState extends State<Profile> {
       readOnly: _isReadOnly,
       onFiledSubmitted: (val) {
         _focusEmail.unfocus();
-        FocusScope.of(context).requestFocus(_focusNIK);
+        FocusScope.of(context).requestFocus(_focusHP);
       },
       onChanged: (val) {
         validation(value: val, type: TypeField.email);
@@ -278,7 +360,7 @@ class _ProfileState extends State<Profile> {
       readOnly: _isReadOnly,
       onFiledSubmitted: (val) {
         _focusEmail.unfocus();
-        FocusScope.of(context).requestFocus(_focusNIK);
+        FocusScope.of(context).requestFocus(_focusHP);
       },
       onChanged: (val) {
         validation(value: val, type: TypeField.email);
@@ -287,7 +369,7 @@ class _ProfileState extends State<Profile> {
 
     final nikField = CustomTextFieldsSecondary(
       textInputAction: TextInputAction.next,
-      isError: _nikValidation,
+      isError: false,
       errorMessage: 'masukan NIK anda',
       keyboardType: TextInputType.number,
       textCapitalization: TextCapitalization.none,
@@ -347,7 +429,6 @@ class _ProfileState extends State<Profile> {
       readOnly: _isReadOnly,
       onFiledSubmitted: (val) {
         _focusHP.unfocus();
-        FocusScope.of(context).requestFocus(_focusUsername);
       },
       onChanged: (val) {
         validation(value: val, type: TypeField.noHp);
@@ -365,7 +446,8 @@ class _ProfileState extends State<Profile> {
       focusNode: _focusPassword,
       autoCorrect: false,
       onFiledSubmitted: (val) {
-
+        _focusPassword.unfocus();
+        FocusScope.of(context).requestFocus(_focusPasswordNew);
       },
       textCapitalization: TextCapitalization.none,
       keyboardType: TextInputType.text,
@@ -392,7 +474,7 @@ class _ProfileState extends State<Profile> {
       isError: _passwordValidationNew,
     );
 
-    ButtonTheme updateOrInsertVideo = ButtonTheme(
+    final ButtonTheme updateOrInsertVideo = ButtonTheme(
       minWidth: Responsive.width(80, context),
       child: RaisedButton(
         child: Text(
@@ -404,7 +486,7 @@ class _ProfileState extends State<Profile> {
         ),
         padding: EdgeInsets.all(8),
         textColor: Colors.white,
-        color: Colors.blue,
+        color: Hexcolor("#0B8B53"),
         splashColor: Colors.green,
         animationDuration: Duration(seconds: 1),
         shape: RoundedRectangleBorder(
@@ -417,36 +499,44 @@ class _ProfileState extends State<Profile> {
       ),
     );
 
-    FlatButton changePassword = FlatButton(
-      child: Text('ganti password',
-        style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 20,
-        ),
-      ),
-      onPressed: () {
-        setState(() {
-          _changePassword = true;
-        });
-      },
+    final ButtonTheme changePassword = ButtonTheme(
+        minWidth: Responsive.width(80, context),
+        child: RaisedButton(
+          child: Text('Ganti Password',
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 20,
+            ),
+          ),
+          onPressed: () {
+            setState(() {
+              _changePassword = true;
+            });
+          },
+          padding: EdgeInsets.all(8),
+          textColor: Colors.white,
+          color: Hexcolor("#0B8B53"),
+          splashColor: Colors.green,
+          animationDuration: Duration(seconds: 1),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(color: Colors.black)
+          ),
+        )
     );
 
-    SingleChildScrollView infoFields = SingleChildScrollView(
+    final SingleChildScrollView infoFields = SingleChildScrollView(
       child: Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget> [
             Padding(
               padding: EdgeInsets.only(top: _isEditing ? 0 : 10),
-              child: _isEditing ? null : nameField,
+              child: _isEditing ? null : nikField,
             ),
             Padding(
               padding: EdgeInsets.only(top: _changePassword ? 0 : 10),
               child: _isEditing ? _changePassword ? null : emailFieldEdit : emailField,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: _isEditing ? 0 : 10),
-              child: _isEditing ? null : nikField,
             ),
             Padding(
               padding: EdgeInsets.only(top: _isEditing ? _changePassword ? 0 : 10 : 10),
@@ -457,11 +547,11 @@ class _ProfileState extends State<Profile> {
               child: _isEditing ? _changePassword ? oldPassword : changePassword : null,
             ),
             Padding(
-              padding: EdgeInsets.only(top: _isEditing ? 10 : 0),
+              padding: EdgeInsets.only(top: _isEditing ? _changePassword ? 10 : 0 : 0),
               child: _isEditing ? _changePassword ? newPassword : null : null,
             ),
             Padding(
-              padding: EdgeInsets.only(top: 20),
+              padding: EdgeInsets.only(top: 10),
               child: _isActive ? updateOrInsertVideo : null,
             )
           ],
@@ -469,7 +559,7 @@ class _ProfileState extends State<Profile> {
       ),
     );
 
-    Column containerFields =  Column(
+    final Column containerFields =  Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget> [
         buttonInfoOrVideo,
@@ -477,11 +567,11 @@ class _ProfileState extends State<Profile> {
       ],
     );
 
-    AnimatedContainer containerInfoAndMyVideo = AnimatedContainer(
+    final AnimatedContainer containerInfoAndMyVideo = AnimatedContainer(
         duration: Duration(seconds: 1),
         curve: Curves.ease,
         decoration: BoxDecoration(
-            color: Colors.amberAccent,
+            color: Hexcolor("#ADE7D6"),
             borderRadius: new BorderRadius.only(
                 topLeft: Radius.circular(30),
                 topRight: Radius.circular(30)
@@ -490,7 +580,7 @@ class _ProfileState extends State<Profile> {
         child: _isActive ? containerFields : buttonInfoOrVideo
     );
 
-    AnimatedPadding animationPadding = AnimatedPadding(
+    final AnimatedPadding animationPadding = AnimatedPadding(
       duration: Duration(seconds: 1),
       padding: EdgeInsets.only(bottom: _isActive ? MediaQuery.of(context).viewInsets.bottom : 0),
       curve: Curves.ease,
@@ -516,7 +606,6 @@ class _ProfileState extends State<Profile> {
 
     // TODO: implement build
     return Scaffold(
-      //appBar: appBar,
       body: Padding(
           padding: const EdgeInsets.only(top: 20.0),
           child: _isLoading ? loading : animationPadding
@@ -554,8 +643,6 @@ class _ProfileState extends State<Profile> {
     setState(() {
       switch (type) {
         case TypeField.username:
-          _username = value;
-          _usernameValidation = _username.length >= 6 ? false : true;
           break;
         case TypeField.password:
           _passwordOld = value;
@@ -567,7 +654,6 @@ class _ProfileState extends State<Profile> {
           break;
         case TypeField.name:
           _name = value;
-          _nameValidation = _name.length >= 4 ? false : true;
           break;
         case TypeField.email:
           _email = value;
@@ -575,7 +661,6 @@ class _ProfileState extends State<Profile> {
           break;
         case TypeField.nik:
           _nik = value;
-          _nikValidation = validateNIK(nik: value);
           break;
         case TypeField.noHp:
           _noHp = value;

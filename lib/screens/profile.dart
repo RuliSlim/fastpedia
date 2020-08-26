@@ -10,6 +10,7 @@ import 'package:fastpedia/services/validation.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +25,7 @@ class _ProfileState extends State<Profile> {
   String _username;
 
   // state components
-  bool _isActive = false;
+  bool _isActive = true;
   bool _isMyVideo = false;
   bool _isEditing = false;
   bool _isReadOnly = true;
@@ -68,7 +69,7 @@ class _ProfileState extends State<Profile> {
     Colors.yellow
   ];
 
-  void getUsername () async {
+  Future<void> getUsername () async {
     User user = await UserPreferences().getUser();
     setState(() {
       userData = user;
@@ -78,6 +79,7 @@ class _ProfileState extends State<Profile> {
       _nik = user.nik;
       _noHp = user.phone;
     });
+    print([_noHp, _nik, _email, "<<<<<<<<"]);
   }
 
   random(min, max){
@@ -193,60 +195,127 @@ class _ProfileState extends State<Profile> {
         )
     );
 
-    Padding profilePicture = Padding(
-      padding: EdgeInsets.all(20),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              CircleAvatar(
-                child: Icon(
-                  Icons.person_pin,
-                  size: 50,
-                ),
-                radius: 30,
-                backgroundColor: _randomColor[_colorIdx],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Text(
-                  '$_username',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 30
+    Container profilePicture = Container(
+        width: Responsive.width(80, context),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                CircleAvatar(
+                  child: Icon(
+                    Icons.person_pin,
+                    size: 50,
                   ),
+                  radius: 30,
+                  backgroundColor: _randomColor[_colorIdx],
                 ),
-              )
-            ],
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Text(
+                    _name != null ? _name.toCapitalize().toString() : "Loading",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 30
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-      )
+        )
     );
 
-//    Row profilePicture = Row(
-//      mainAxisAlignment: MainAxisAlignment.center,
-//      children: <Widget>[
-//        Column(
-//            children: <Widget>[
-//              CircleAvatar(
-//                child: Icon(Icons.person),
-//                radius: 40,
-//              ),
-//              Text(
-//                '$_username',
-//                style: TextStyle(
-//                    color: Hexcolor("#1E3B2A"),
-//                    fontWeight: FontWeight.w900,
-//                    fontSize: 20
-//                ),
-//              )
-//            ]
-//        ),
-//      ],
-//    );
+    Card gantiPassword = Card(
+      child: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Icon(
+              Icons.lock,
+              size: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Text(
+                'Ganti Password',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 20
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+
+    Card termsAndCondition = Card(
+      child: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Icon(
+              MaterialIcons.pages,
+              size: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Text(
+                'Syarat & Ketentuan',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 20
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+
+    Card logoutButton = Card(
+        child: Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Icon(
+                  MaterialIcons.exit_to_app,
+                  size: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Text(
+                    'Logout',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 20
+                    ),
+                  ),
+                )
+              ],
+            )
+        )
+    );
+
+    final Container cards = Container(
+        width: Responsive.width(80, context),
+        child: Column(
+          children: [
+            gantiPassword,
+            termsAndCondition,
+            logoutButton
+          ],
+        )
+    );
 
     ButtonTheme buttonLogOut = ButtonTheme(
         minWidth: Responsive.width(60, context),
@@ -295,30 +364,6 @@ class _ProfileState extends State<Profile> {
     );
 
     // register components
-    final nameField = CustomTextFieldsSecondary(
-      textInputAction: TextInputAction.next,
-      isError: false,
-      errorMessage: 'masukan nama sesuai ktp',
-      keyboardType: TextInputType.text,
-      textCapitalization: TextCapitalization.words,
-      autoCorrect: false,
-      focusNode: _focusName,
-      label: 'name',
-      hintText: 'masukan nama anda',
-      width: 80,
-      icon: Icon(Icons.person),
-      secret: false,
-      initialValue: _name,
-      readOnly: true,
-      onFiledSubmitted: (val) {
-        _focusName.unfocus();
-        FocusScope.of(context).requestFocus(_focusEmail);
-      },
-      onChanged: (val) {
-        validation(type: TypeField.name, value: val);
-      },
-    );
-
     final emailField = CustomTextFieldsSecondary(
       textInputAction: TextInputAction.next,
       isError: _emailValidation,
@@ -341,6 +386,10 @@ class _ProfileState extends State<Profile> {
       onChanged: (val) {
         validation(value: val, type: TypeField.email);
       },
+      suffixButton: FlatButton(
+        child: Text("Ubah"),
+        onPressed: () => print("<<<<<<<<<<object>>>>>>>>>>"),
+      ),
     );
 
     final emailFieldEdit = CustomTextFields(
@@ -411,6 +460,10 @@ class _ProfileState extends State<Profile> {
       onChanged: (val) {
         validation(value: val, type: TypeField.noHp);
       },
+      suffixButton: FlatButton(
+        child: Text("Ubah"),
+        onPressed: () => print("LLSADSAFASFS"),
+      ),
     );
 
     final noHPFieldEdit = CustomTextFields(
@@ -525,37 +578,15 @@ class _ProfileState extends State<Profile> {
         )
     );
 
-    final SingleChildScrollView infoFields = SingleChildScrollView(
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget> [
-            Padding(
-              padding: EdgeInsets.only(top: _isEditing ? 0 : 10),
-              child: _isEditing ? null : nikField,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: _changePassword ? 0 : 10),
-              child: _isEditing ? _changePassword ? null : emailFieldEdit : emailField,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: _isEditing ? _changePassword ? 0 : 10 : 10),
-              child: _isEditing ? _changePassword ? null : noHPFieldEdit : noHPField,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: _isEditing ? 10 : 0),
-              child: _isEditing ? _changePassword ? oldPassword : changePassword : null,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: _isEditing ? _changePassword ? 10 : 0 : 0),
-              child: _isEditing ? _changePassword ? newPassword : null : null,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: _isActive ? updateOrInsertVideo : null,
-            )
-          ],
-        ),
+    final Container infoFields = Container(
+      width: Responsive.width(100, context),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget> [
+          nikField,
+          _isEditing ? emailFieldEdit : emailField,
+          _isEditing ? noHPFieldEdit : noHPField,
+        ],
       ),
     );
 
@@ -580,37 +611,24 @@ class _ProfileState extends State<Profile> {
         child: _isActive ? containerFields : buttonInfoOrVideo
     );
 
-    final AnimatedPadding animationPadding = AnimatedPadding(
-      duration: Duration(seconds: 1),
-      padding: EdgeInsets.only(bottom: _isActive ? MediaQuery.of(context).viewInsets.bottom : 0),
-      curve: Curves.ease,
-      child: Column(
-        children: <Widget> [
-          Expanded(
-            flex: _isActive ? 2 : 9,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget> [
-                profilePicture,
-                buttonLogOut
-              ],
-            ),
-          ),
-          Expanded(
-            flex: _isActive ? 4 : 1,
-            child: containerInfoAndMyVideo,
-          )
-        ],
-      ),
+    final Column animationPadding = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget> [
+        profilePicture,
+        infoFields,
+        cards,
+      ],
     );
 
     // TODO: implement build
-    return Scaffold(
-      body: Padding(
-          padding: const EdgeInsets.only(top: 20.0),
-          child: _isLoading ? loading : animationPadding
-      ),
-    );
+
+    if (_email == null || _name == null || _nik == null ) {
+      return Text("Waiting");
+    } else {
+      return Scaffold(
+        body: _isLoading ? loading : animationPadding
+      );
+    }
   }
 
   _changeInfoOrVideos({InfoVideos type}) {

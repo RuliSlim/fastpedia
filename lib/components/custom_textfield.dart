@@ -186,7 +186,7 @@ class _CustomTextFieldsStateSecondary extends State<CustomTextFieldsSecondary> {
         decoration: InputDecoration(
             prefixIcon: widget.icon,
             errorMaxLines: 5,
-            suffixIcon: null == FlatButton ? widget.suffixButton : null,
+            suffixIcon: widget.suffixButton != null ? widget.suffixButton : null,
             labelText: widget.label,
             focusedBorder: !widget.readOnly ? new OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),

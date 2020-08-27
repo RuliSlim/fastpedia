@@ -58,7 +58,7 @@ class _DashboardState extends State<Dashboard> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              _adsPoint != null ? _adsPoint.toStringAsFixed(1) : "0.0",
+              _adsPoint != null ? Delimiters(_adsPoint).pointDelimiters() : "0.0",
               style: TextStyle(
                   fontSize: 30,
                   color: Colors.white
@@ -96,7 +96,7 @@ class _DashboardState extends State<Dashboard> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              _voucher != null ? _voucher.toStringAsFixed(1) : "0.0",
+              _voucher != null ? Delimiters(_voucher).pointDelimiters() : "0.0",
               style: TextStyle(
                   fontSize: 30,
                   color: Colors.white
@@ -217,24 +217,16 @@ class _DashboardState extends State<Dashboard> {
     );
 
     return Scaffold(
-      body: AnimatedPadding(
-        padding: const EdgeInsets.all(0),
-        duration: Duration(seconds: 3),
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(50.0),
-                child: Image(image: AssetImage('Fast-logo.png'),),
-              ),
-              flex: _isActive ? 5 : 10,
+            Padding(
+              padding: const EdgeInsets.all(50.0),
+              child: Image(image: AssetImage('Fast-logo.png'),),
             ),
-            Expanded(
-              child: box,
-              flex: _isActive ? 5 : 1,
-            )
+            box
           ],
         ),
       ),

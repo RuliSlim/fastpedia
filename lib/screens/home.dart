@@ -1,3 +1,4 @@
+import 'package:fastpedia/main.dart';
 import 'package:fastpedia/screens/dashboard.dart';
 import 'package:fastpedia/screens/discover_video.dart';
 import 'package:fastpedia/screens/profile.dart';
@@ -17,6 +18,7 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
   String titleAppBar = 'Home';
   String tabSelected = 'Home';
   bool isShown = true;
+  bool changePassword = false;
 
   int _selectedIndex = 0;
 
@@ -65,7 +67,18 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
 
     // Widgets
     AppBar appBar = AppBar(
-      title: Text(titleAppBar, style: TextStyle(color: Hexcolor("#1E3B2A")),),
+      title: titleAppBar != "Ganti Password" ? Text(titleAppBar, style: TextStyle(color: Hexcolor("#1E3B2A")),) : Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          FlatButton(
+            child: Icon(Icons.arrow_back, size: Responsive.width(10, context), color: Colors.black,),
+            onPressed: () {
+              backToProfile();
+            },
+          ),
+          Text(titleAppBar, style: TextStyle(color: Hexcolor("#1E3B2A")),)
+        ],
+      ),
       centerTitle: false,
       backgroundColor: Colors.white,
     );
@@ -161,13 +174,17 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
         child: WatchVideo(onTimeAndSubSuccess: onTimeAndSubSuccess, onNextVideo: onNextVideo),
       ),
       Container(
-        child: ScreenScanner(),
+        child: Center(
+          child: Image(image: AssetImage("coming-soon.jpg"),),
+        ),
       ),
       Container(
-        child: Text("History"),
+        child: Center(
+          child: Image(image: AssetImage("coming-soon.jpg"),),
+        ),
       ),
       Container(
-        child: Profile(),
+        child: Profile(toChangePassword: toChangePassword, backToProfile: backToProfile, changePassword: changePassword),
       )
     ];
 
@@ -177,5 +194,19 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
         bottomNavigationBar: tabBarShown(),
         body: bodyScreen[_selectedIndex]
     );
+  }
+
+  void toChangePassword () {
+    setState(() {
+      titleAppBar = "Ganti Password";
+      changePassword = true;
+    });
+  }
+
+  void backToProfile () {
+    setState(() {
+      titleAppBar = "Profile";
+      changePassword = false;
+    });
   }
 }

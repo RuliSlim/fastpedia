@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:commons/commons.dart';
 import 'package:fastpedia/components/custom_textfield.dart';
 import 'package:fastpedia/main.dart';
@@ -15,6 +16,12 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatefulWidget {
+  final VoidCallback toChangePassword;
+  final VoidCallback backToProfile;
+  final bool changePassword;
+
+  Profile({Key key, this.backToProfile, this.toChangePassword, this.changePassword}) : super(key: key);
+
   @override
   _ProfileState createState() => _ProfileState();
 }
@@ -22,24 +29,21 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   User userData;
-  String _username;
 
   // state components
-  bool _isActive = true;
-  bool _isMyVideo = false;
-  bool _isEditing = false;
-  bool _isReadOnly = true;
+  bool _isReadOnlyEmail = true;
+  bool _isReadOnlyPhone = true;
   bool _changePassword = false;
   bool _isLoading = false;
+  bool _emailEditing = false;
+  bool _phoneEditing = false;
 
   // focus fields;
-  FocusNode _focusName = new FocusNode();
   FocusNode _focusEmail = new FocusNode();
   FocusNode _focusNIK = new FocusNode();
   FocusNode _focusHP = new FocusNode();
 
   // check if text fields is active
-  FocusNode _focusUsername = new FocusNode();
   FocusNode _focusPassword = new FocusNode();
   FocusNode _focusPasswordNew = new FocusNode();
 
@@ -73,13 +77,11 @@ class _ProfileState extends State<Profile> {
     User user = await UserPreferences().getUser();
     setState(() {
       userData = user;
-      _username = user.username;
       _name = user.name;
       _email = user.email;
       _nik = user.nik;
       _noHp = user.phone;
     });
-    print([_noHp, _nik, _email, "<<<<<<<<"]);
   }
 
   random(min, max){
@@ -98,18 +100,11 @@ class _ProfileState extends State<Profile> {
 
     setState(() {
       _colorIdx = random(0, _randomColor.length - 1);
+      _changePassword = widget.changePassword;
     });
-
-    // focus comp
-    _focusUsername.addListener(_onFocusChange);
-    _focusPassword.addListener(_onFocusChange);
-    _focusPasswordNew.addListener(_onFocusChange);
-
-    // register components focus
-    _focusName.addListener(_onFocusChange);
-    _focusEmail.addListener(_onFocusChange);
-    _focusNIK.addListener(_onFocusChange);
-    _focusHP.addListener(_onFocusChange);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      widget.backToProfile();
+    });
   }
 
   @override
@@ -122,8 +117,7 @@ class _ProfileState extends State<Profile> {
     // change to edit
     void _changeToEdit() {
       setState(() {
-        _isEditing = true;
-        _isReadOnly = false;
+        _isReadOnlyEmail = false;
       });
     }
     //
@@ -131,8 +125,7 @@ class _ProfileState extends State<Profile> {
     // do update
     void _updateFunction() async {
       setState(() {
-        _isReadOnly = true;
-        _isEditing = false;
+        _isReadOnlyEmail = true;
         _changePassword = false;
         _isLoading = true;
       });
@@ -154,8 +147,7 @@ class _ProfileState extends State<Profile> {
 
     void _changePasswordFunction() async {
       setState(() {
-        _isReadOnly = true;
-        _isEditing = false;
+        _isReadOnlyEmail = true;
         _changePassword = false;
         _isLoading = true;
       });
@@ -180,6 +172,7 @@ class _ProfileState extends State<Profile> {
         _isLoading = false;
       });
 
+      widget.backToProfile();
       getUsername();
     }
     //
@@ -201,25 +194,29 @@ class _ProfileState extends State<Profile> {
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                CircleAvatar(
-                  child: Icon(
-                    Icons.person_pin,
-                    size: 50,
+                SizedBox(
+                  child: CircleAvatar(
+                    child: Icon(
+                      Icons.person_pin,
+                      size: Responsive.width(8, context),
+                    ),
+                    radius: Responsive.width(5, context),
+                    backgroundColor: _randomColor[_colorIdx],
                   ),
-                  radius: 30,
-                  backgroundColor: _randomColor[_colorIdx],
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
-                  child: Text(
+                  child: AutoSizeText(
                     _name != null ? _name.toCapitalize().toString() : "Loading",
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w900,
-                        fontSize: 30
                     ),
+                    maxLines: 3,
+                    maxFontSize: 30,
+                    minFontSize: 20,
                   ),
                 )
               ],
@@ -228,28 +225,40 @@ class _ProfileState extends State<Profile> {
         )
     );
 
-    Card gantiPassword = Card(
-      child: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Icon(
-              Icons.lock,
-              size: 20,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Text(
-                'Ganti Password',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 20
+    Card buttonToChangePassword = Card(
+      child: InkWell(
+        splashColor: Colors.blue.withAlpha(30),
+        onTap: () {
+          setState(() {
+            _changePassword = true;
+          });
+          widget.toChangePassword();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                child: Icon(
+                  Icons.lock,
+                  size: 20,
                 ),
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: AutoSizeText(
+                  'Ganti Password',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w900,
+                  ),
+                  minFontSize: 10,
+                  maxFontSize: 20,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -260,19 +269,22 @@ class _ProfileState extends State<Profile> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Icon(
-              MaterialIcons.pages,
-              size: 20,
+            SizedBox(
+              child: Icon(
+                MaterialIcons.pages,
+                size: 20,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 20),
-              child: Text(
+              child: AutoSizeText(
                 'Syarat & Ketentuan',
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w900,
-                    fontSize: 20
                 ),
+                maxFontSize: 20,
+                minFontSize: 10,
               ),
             )
           ],
@@ -281,27 +293,37 @@ class _ProfileState extends State<Profile> {
     );
 
     Card logoutButton = Card(
-        child: Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Icon(
-                  MaterialIcons.exit_to_app,
-                  size: 20,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Text(
-                    'Logout',
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 20
+        child: InkWell(
+            splashColor: Colors.blue.withAlpha(30),
+            onTap: () {
+              logoutUser();
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(
+                    child: Icon(
+                      MaterialIcons.exit_to_app,
+                      size: 20,
                     ),
                   ),
-                )
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: AutoSizeText(
+                      'Logout',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900,
+                      ),
+                      minFontSize: 10,
+                      maxFontSize: 20,
+                    ),
+                  )
+                ],
+              ),
             )
         )
     );
@@ -310,62 +332,16 @@ class _ProfileState extends State<Profile> {
         width: Responsive.width(80, context),
         child: Column(
           children: [
-            gantiPassword,
+            buttonToChangePassword,
             termsAndCondition,
             logoutButton
           ],
         )
     );
 
-    ButtonTheme buttonLogOut = ButtonTheme(
-        minWidth: Responsive.width(60, context),
-        child: RaisedButton(
-          onPressed: () {
-            logoutUser();
-            Navigator.pushReplacementNamed(context, '/login');
-          },
-          child: Text(
-            'Logout',
-            style: TextStyle(
-                color: Hexcolor("#1E3B2A"),
-                fontWeight: FontWeight.w900,
-                fontSize: 20
-            ),
-          ),
-          padding: EdgeInsets.all(8),
-          textColor: Colors.white,
-          color: Hexcolor("#0B8B53"),
-          splashColor: Colors.green,
-          animationDuration: Duration(seconds: 1),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-              side: BorderSide(color: Colors.black)
-          ),
-        )
-    );
-
-    // box container
-    Row buttonInfoOrVideo = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        FlatButton(
-          child: Text("Infoku",
-            style: TextStyle(
-                color: Hexcolor("#1E3B2A"),
-                fontWeight: FontWeight.w900,
-                fontSize: 20
-            ),
-          ),
-          onPressed: () {
-            _changeInfoOrVideos(type: InfoVideos.info);
-          },
-        ),
-      ],
-    );
-
     // register components
     final emailField = CustomTextFieldsSecondary(
-      textInputAction: TextInputAction.next,
+      textInputAction: TextInputAction.done,
       isError: _emailValidation,
       errorMessage: 'email is invalid',
       keyboardType: TextInputType.emailAddress,
@@ -375,68 +351,39 @@ class _ProfileState extends State<Profile> {
       label: 'email',
       hintText: 'masukan email anda',
       width: 80,
-      icon: Icon(Icons.email),
+      icon: Icon(Icons.email, size: Responsive.width(4, context),),
       secret: false,
       initialValue: _email,
-      readOnly: _isReadOnly,
+      readOnly: _isReadOnlyEmail,
       onFiledSubmitted: (val) {
         _focusEmail.unfocus();
-        FocusScope.of(context).requestFocus(_focusHP);
+        setState(() {
+          _phoneEditing = false;
+          _emailEditing = false;
+          _isReadOnlyEmail = true;
+        });
+        _updateFunction();
       },
       onChanged: (val) {
         validation(value: val, type: TypeField.email);
       },
       suffixButton: FlatButton(
-        child: Text("Ubah"),
-        onPressed: () => print("<<<<<<<<<<object>>>>>>>>>>"),
+        child: Text(_emailEditing ? "Simpan" : "Ubah", style: TextStyle(fontSize: Responsive.width(4, context)),),
+        onPressed: () {
+          if (_emailEditing) {
+            setState(() {
+              _emailEditing = false;
+              _isReadOnlyEmail = true;
+            });
+            _updateFunction();
+          } else {
+            setState(() {
+              _emailEditing = true;
+              _isReadOnlyEmail = false;
+            });
+          }
+        },
       ),
-    );
-
-    final emailFieldEdit = CustomTextFields(
-      textInputAction: TextInputAction.next,
-      isError: _emailValidation,
-      errorMessage: 'email is invalid',
-      keyboardType: TextInputType.emailAddress,
-      textCapitalization: TextCapitalization.none,
-      autoCorrect: false,
-      focusNode: _focusEmail,
-      label: 'email',
-      hintText: 'masukan email anda',
-      width: 80,
-      icon: Icon(Icons.email),
-      secret: false,
-      initialValue: _email,
-      readOnly: _isReadOnly,
-      onFiledSubmitted: (val) {
-        _focusEmail.unfocus();
-        FocusScope.of(context).requestFocus(_focusHP);
-      },
-      onChanged: (val) {
-        validation(value: val, type: TypeField.email);
-      },
-    );
-
-    final nikField = CustomTextFieldsSecondary(
-      textInputAction: TextInputAction.next,
-      isError: false,
-      errorMessage: 'masukan NIK anda',
-      keyboardType: TextInputType.number,
-      textCapitalization: TextCapitalization.none,
-      autoCorrect: false,
-      focusNode: _focusNIK,
-      label: 'NIK',
-      width: 80,
-      icon: Icon(Icons.verified_user),
-      secret: false,
-      initialValue: _nik,
-      readOnly: true,
-      onFiledSubmitted: (val) {
-        _focusNIK.unfocus();
-        FocusScope.of(context).requestFocus(_focusHP);
-      },
-      onChanged: (val) {
-        validation(type: TypeField.nik, value: val);
-      },
     );
 
     final noHPField = CustomTextFieldsSecondary(
@@ -449,42 +396,61 @@ class _ProfileState extends State<Profile> {
       focusNode: _focusHP,
       label: 'phone number',
       width: 80,
-      icon: Icon(Icons.phone),
+      icon: Icon(Icons.phone, size: Responsive.width(4, context),),
       secret: false,
       initialValue: _noHp,
-      readOnly: _isReadOnly,
+      readOnly: _isReadOnlyPhone,
       onFiledSubmitted: (val) {
         _focusHP.unfocus();
-        FocusScope.of(context).requestFocus(_focusUsername);
+        _updateFunction();
+        setState(() {
+          _phoneEditing = false;
+          _emailEditing = false;
+          _isReadOnlyPhone = true;
+        });
       },
       onChanged: (val) {
         validation(value: val, type: TypeField.noHp);
       },
       suffixButton: FlatButton(
-        child: Text("Ubah"),
-        onPressed: () => print("LLSADSAFASFS"),
+        child: Text(_phoneEditing ? "Simpan" : "Ubah", style: TextStyle(fontSize: Responsive.width(4, context))),
+        onPressed: () {
+          if (_phoneEditing) {
+            setState(() {
+              _phoneEditing = false;
+              _isReadOnlyPhone = true;
+            });
+            _updateFunction();
+          } else {
+            setState(() {
+              _phoneEditing = true;
+              _isReadOnlyPhone = false;
+            });
+          }
+        },
       ),
     );
 
-    final noHPFieldEdit = CustomTextFields(
+    final nikField = CustomTextFieldsSecondary(
       textInputAction: TextInputAction.next,
-      isError: _noHpValidation,
-      errorMessage: 'no hp tidak valid',
-      keyboardType: TextInputType.phone,
+      isError: false,
+      errorMessage: 'masukan NIK anda',
+      keyboardType: TextInputType.number,
       textCapitalization: TextCapitalization.none,
       autoCorrect: false,
-      focusNode: _focusHP,
-      label: 'phone number',
+      focusNode: _focusNIK,
+      label: 'NIK',
       width: 80,
-      icon: Icon(Icons.phone),
+      icon: Icon(Icons.verified_user, size: Responsive.width(4, context)),
       secret: false,
-      initialValue: _noHp,
-      readOnly: _isReadOnly,
+      initialValue: _nik,
+      readOnly: true,
       onFiledSubmitted: (val) {
-        _focusHP.unfocus();
+        _focusNIK.unfocus();
+        FocusScope.of(context).requestFocus(_focusHP);
       },
       onChanged: (val) {
-        validation(value: val, type: TypeField.noHp);
+        validation(type: TypeField.nik, value: val);
       },
     );
 
@@ -492,7 +458,7 @@ class _ProfileState extends State<Profile> {
       textInputAction: TextInputAction.done,
       secret: true,
       hintText: 'Masukan Password Lama',
-      icon: Icon(Icons.lock),
+      icon: Icon(Icons.lock, size: Responsive.width(4, context)),
       width: 80,
       label: 'password lama',
       onChanged: (val) => validation(type: TypeField.password, value: val),
@@ -512,14 +478,14 @@ class _ProfileState extends State<Profile> {
       textInputAction: TextInputAction.done,
       secret: true,
       hintText: 'masukan password baru',
-      icon: Icon(Icons.lock),
+      icon: Icon(Icons.lock, size: Responsive.width(4, context)),
       width: 80,
       label: 'password baru',
       onChanged: (val) => validation(type: TypeField.passwordNew, value: val),
       focusNode: _focusPasswordNew,
       autoCorrect: false,
       onFiledSubmitted: (val) {
-
+        _changePasswordFunction();
       },
       textCapitalization: TextCapitalization.none,
       keyboardType: TextInputType.text,
@@ -527,32 +493,7 @@ class _ProfileState extends State<Profile> {
       isError: _passwordValidationNew,
     );
 
-    final ButtonTheme updateOrInsertVideo = ButtonTheme(
-      minWidth: Responsive.width(80, context),
-      child: RaisedButton(
-        child: Text(
-          _isMyVideo ? "Add Video" : _isEditing ? _changePassword ? "Update Password" : "Update" : "Edit",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        padding: EdgeInsets.all(8),
-        textColor: Colors.white,
-        color: Hexcolor("#0B8B53"),
-        splashColor: Colors.green,
-        animationDuration: Duration(seconds: 1),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: Colors.black)
-        ),
-        onPressed: () {
-          _isMyVideo ? null : _isEditing ? _changePassword ? _changePasswordFunction() : _updateFunction() : _changeToEdit();
-        },
-      ),
-    );
-
-    final ButtonTheme changePassword = ButtonTheme(
+    final ButtonTheme changePasswordButton = ButtonTheme(
         minWidth: Responsive.width(80, context),
         child: RaisedButton(
           child: Text('Ganti Password',
@@ -562,9 +503,7 @@ class _ProfileState extends State<Profile> {
             ),
           ),
           onPressed: () {
-            setState(() {
-              _changePassword = true;
-            });
+            _changePasswordFunction();
           },
           padding: EdgeInsets.all(8),
           textColor: Colors.white,
@@ -584,76 +523,81 @@ class _ProfileState extends State<Profile> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget> [
           nikField,
-          _isEditing ? emailFieldEdit : emailField,
-          _isEditing ? noHPFieldEdit : noHPField,
+          emailField,
+          noHPField,
         ],
       ),
     );
 
-    final Column containerFields =  Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget> [
-        buttonInfoOrVideo,
-        Expanded(child: infoFields)
-      ],
-    );
-
-    final AnimatedContainer containerInfoAndMyVideo = AnimatedContainer(
-        duration: Duration(seconds: 1),
-        curve: Curves.ease,
-        decoration: BoxDecoration(
-            color: Hexcolor("#ADE7D6"),
-            borderRadius: new BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30)
-            )
+    SingleChildScrollView changePasswordField = SingleChildScrollView(
+      child: Container(
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: oldPassword,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: newPassword,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: changePasswordButton,
+            ),
+          ],
         ),
-        child: _isActive ? containerFields : buttonInfoOrVideo
+      ),
     );
 
     final Column animationPadding = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget> [
-        profilePicture,
-        infoFields,
-        cards,
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: profilePicture,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: infoFields,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: cards,
+        ),
       ],
     );
 
     // TODO: implement build
 
     if (_email == null || _name == null || _nik == null ) {
-      return Text("Waiting");
+      return loadingScreen(
+        context,
+        loadingType: LoadingType.JUMPING,
+      );
     } else {
       return Scaffold(
-        body: _isLoading ? loading : animationPadding
+          body: _isLoading ? loading : widget.changePassword ? changePasswordField : SingleChildScrollView(
+            child: GestureDetector(
+              child: animationPadding,
+              onTap: () {
+                _focusPassword.unfocus();
+                _focusEmail.unfocus();
+                _focusHP.unfocus();
+                _focusNIK.unfocus();
+
+                setState(() {
+                  _phoneEditing = false;
+                  _emailEditing = false;
+                  _isReadOnlyPhone = true;
+                  _isReadOnlyEmail = true;
+                });
+              },
+            ),
+          )
       );
-    }
-  }
-
-  _changeInfoOrVideos({InfoVideos type}) {
-    setState(() {
-      _isActive = true;
-      _isEditing = false;
-      _changePassword = false;
-      switch (type) {
-        case InfoVideos.videos:
-          _isMyVideo = true;
-          break;
-        case InfoVideos.info:
-          _isMyVideo = false;
-          break;
-      }
-    });
-  }
-
-  void _onFocusChange(){
-    if (_isMyVideo) {
-
-    } else {
-      setState(() {
-        _isActive = _focusName.hasFocus || _focusEmail.hasFocus || _focusNIK.hasFocus || _focusHP.hasFocus || _focusUsername.hasFocus || _focusPassword.hasFocus || _focusPasswordNew.hasFocus ? true : false;
-      });
     }
   }
 

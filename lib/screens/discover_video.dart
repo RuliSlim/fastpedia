@@ -1,3 +1,4 @@
+import 'package:commons/commons.dart';
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/user.dart';
 import 'package:fastpedia/model/video.dart';
@@ -322,7 +323,10 @@ class _WatchVideoState extends State<WatchVideo> {
       }
     } else {
       return Scaffold(
-        body: Text("WAITING"),
+        body: loadingScreen(
+          context,
+          loadingType: LoadingType.SCALING
+        ),
       );
     }
   }

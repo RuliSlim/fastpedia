@@ -183,6 +183,9 @@ class _CustomTextFieldsStateSecondary extends State<CustomTextFieldsSecondary> {
         controller: null == TextEditingController ? widget.controller : null,
         initialValue: widget.initialValue != null ? widget.initialValue : null,
         readOnly: widget.readOnly ? widget.readOnly : false,
+        style: TextStyle(
+          fontSize: Responsive.width(4, context)
+        ),
         decoration: InputDecoration(
             prefixIcon: widget.icon,
             errorMaxLines: 5,

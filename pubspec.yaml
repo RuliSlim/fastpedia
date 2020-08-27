@@ -35,9 +35,7 @@ dependencies:
   barcode_scan: ^3.0.1
   commons: ^0.7.8+3
   flashy_tab_bar: ^0.0.3
-  flutter_media_notification: ^1.2.6
   smooth_star_rating: ^1.1.1
-  permission_handler: ^5.0.1+1
   flutter_inappwebview: ^4.0.0+4
   hexcolor: ^1.0.4
   flutter_icons: ^1.1.0
@@ -49,6 +47,13 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  flutter_launcher_icons: ^0.7.5
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/Fast-logo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

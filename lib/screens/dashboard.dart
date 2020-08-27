@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/points.dart';
-import 'package:fastpedia/number_extension.dart';
+import 'package:fastpedia/services/number_extension.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

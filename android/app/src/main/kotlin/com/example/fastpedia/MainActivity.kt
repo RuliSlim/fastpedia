@@ -1,4 +1,4 @@
-package com.example.fastpedia
+package com.rubixovt.fastpedia
 
 import io.flutter.embedding.android.FlutterActivity
 

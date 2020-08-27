@@ -7,6 +7,7 @@ import 'package:fastpedia/services/user_preferences.dart';
 import 'package:fastpedia/services/user_provider.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 
@@ -36,6 +37,7 @@ class _MyApp extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => WebService()),

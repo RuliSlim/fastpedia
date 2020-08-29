@@ -67,7 +67,17 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
 
     // Widgets
     AppBar appBar = AppBar(
-      title: titleAppBar != "Ganti Password" ? Text(titleAppBar, style: TextStyle(color: Hexcolor("#1E3B2A")),) : Row(
+      elevation: 5,
+      title: titleAppBar != "Ganti Password" ?
+      Text(
+        titleAppBar,
+        style: TextStyle(
+            color: Hexcolor("#FFFFFF"),
+            fontSize: 20,
+            fontWeight: FontWeight.w700
+        ),
+      ) :
+      Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           FlatButton(
@@ -76,11 +86,18 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
               backToProfile();
             },
           ),
-          Text(titleAppBar, style: TextStyle(color: Hexcolor("#1E3B2A")),)
+          Text(
+              titleAppBar,
+              style: TextStyle(
+                  color: Hexcolor("#FFFFFF"),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700
+              )
+          )
         ],
       ),
       centerTitle: false,
-      backgroundColor: Colors.white,
+      backgroundColor: Hexcolor("#4EC24C"),
     );
 
     FlashyTabBar myFlashyTabBar = FlashyTabBar(

@@ -188,11 +188,29 @@ class _ProfileState extends State<Profile> {
         )
     );
 
+    final Column headerProfile = Column(
+      children: [
+        Container(
+          width: Responsive.width(100, context),
+          height: Responsive.height(10, context),
+          color: Hexcolor("#4EC24C"),
+        ),
+        Container(
+          width: Responsive.width(100, context),
+          height: Responsive.height(10, context),
+          color: Hexcolor("#F6FAF5"),
+        ),
+      ],
+    );
+
+    //final Container
+
     Container profilePicture = Container(
-        width: Responsive.width(80, context),
+        width: Responsive.width(100, context),
+        height: Responsive.height(15, context),
         child: Card(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
@@ -211,8 +229,8 @@ class _ProfileState extends State<Profile> {
                   child: AutoSizeText(
                     _name != null ? _name.toCapitalize().toString() : "Loading",
                     style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w900,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w900,
                     ),
                     maxLines: 3,
                     maxFontSize: 30,
@@ -250,8 +268,8 @@ class _ProfileState extends State<Profile> {
                 child: AutoSizeText(
                   'Ganti Password',
                   style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
                   ),
                   minFontSize: 10,
                   maxFontSize: 20,
@@ -280,8 +298,8 @@ class _ProfileState extends State<Profile> {
               child: AutoSizeText(
                 'Syarat & Ketentuan',
                 style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w900,
                 ),
                 maxFontSize: 20,
                 minFontSize: 10,
@@ -315,8 +333,8 @@ class _ProfileState extends State<Profile> {
                     child: AutoSizeText(
                       'Logout',
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w900,
                       ),
                       minFontSize: 10,
                       maxFontSize: 20,
@@ -494,7 +512,7 @@ class _ProfileState extends State<Profile> {
     );
 
     final ButtonTheme changePasswordButton = ButtonTheme(
-        minWidth: Responsive.width(80, context),
+        minWidth: Responsive.width(90, context),
         child: RaisedButton(
           child: Text('Ganti Password',
             style: TextStyle(
@@ -529,6 +547,10 @@ class _ProfileState extends State<Profile> {
       ),
     );
 
+    final Card containerFields = Card(
+      child: infoFields,
+    );
+
     SingleChildScrollView changePasswordField = SingleChildScrollView(
       child: Container(
         alignment: Alignment.center,
@@ -552,22 +574,30 @@ class _ProfileState extends State<Profile> {
       ),
     );
 
-    final Column animationPadding = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget> [
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: profilePicture,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: infoFields,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: cards,
-        ),
-      ],
+    final Container animationPadding = Container(
+      color: Hexcolor("#F6FAF5"),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget> [
+          Stack(
+              children: [
+                headerProfile,
+                Positioned(
+                  top: Responsive.height(2, context),
+                  child: profilePicture,
+                ),
+              ]
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: containerFields,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: cards,
+          ),
+        ],
+      ),
     );
 
     // TODO: implement build

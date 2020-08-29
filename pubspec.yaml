@@ -70,6 +70,7 @@ flutter:
   assets:
   - Fast-logo.png
   - coming-soon.jpg
+  - bg-login.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

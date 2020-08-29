@@ -74,7 +74,8 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
             errorMaxLines: 5,
             suffixIcon: widget.label == "password" || widget.label == "password lama" || widget.label == "password baru" ? GestureDetector(
               child: Icon(
-                widget.isHidePassword ? Icons.visibility_off : Icons.visibility
+                widget.isHidePassword ? Icons.visibility_off : Icons.visibility,
+                color: Colors.white,
               ),
               onTap: () {
                 setState(() {
@@ -84,19 +85,30 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
               },
             ) : null,
             labelText: widget.label,
+            labelStyle: TextStyle(
+              color: Colors.white
+            ),
             border: new OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide(
                   style: BorderStyle.solid,
-                  color: Colors.black,
+                  color: Colors.white,
                   width: 3
               ),
+            ),
+            enabledBorder: new OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(
+                style: BorderStyle.solid,
+                color: Colors.white,
+                width: 3
+              )
             ),
             focusedBorder: new OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(
                     style: BorderStyle.solid,
-                    color: Colors.green,
+                    color: Colors.white,
                     width: 3
                 )
             ),

@@ -7,6 +7,7 @@ import 'package:fastpedia/services/user_provider.dart';
 import 'package:fastpedia/services/validation.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
@@ -186,69 +187,51 @@ class _LoginPage extends State<LoginPage> {
         confirmationDialog(
             context,
             """
-Performing hot restart...
-Syncing files to device Android SDK built for x86...
-Restarted application in 2,772ms.
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
-I/flutter (32573): ini vaaal>>>>>>><<<<
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
-W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
-I/flutter (32573): tidaaaaaak
-Performing hot restart...
-Syncing files to device Android SDK built for x86...
-Restarted application in 2,772ms.
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
-I/flutter (32573): ini vaaal>>>>>>><<<<
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
-W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
-I/flutter (32573): tidaaaaaak
-Performing hot restart...
-Syncing files to device Android SDK built for x86...
-Restarted application in 2,772ms.
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
-I/flutter (32573): ini vaaal>>>>>>><<<<
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
-W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
-I/flutter (32573): tidaaaaaak
-Performing hot restart...
-Syncing files to device Android SDK built for x86...
-Restarted application in 2,772ms.
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.waiting, null, null), ini snapshot]
-I/flutter (32573): ini vaaal>>>>>>><<<<
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-I/flutter (32573): [AsyncSnapshot<dynamic>(ConnectionState.done, Instance of 'User', null), ini snapshot]
-I/flutter (32573): [null, ini default]
-W/IInputConnectionWrapper(32573): beginBatchEdit on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextBeforeCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getTextAfterCursor on inactive InputConnection
-W/IInputConnectionWrapper(32573): getSelectedText on inactive InputConnection
-W/IInputConnectionWrapper(32573): endBatchEdit on inactive InputConnection
-I/flutter (32573): tidaaaaaak
+1.Definisi
+1.A Aplikasi Fastpedia adalah aplikasi perangkat lunak yang menyediakan layanan edukasi digital, yang dapat
+digunakan oleh masyarakat umum.
+
+
+2.Pendaftaran Akun
+2.A Sebelum pengguna menggunakan Aplikasi Fastpedia, pengguna diwajibkan untuk melakukan pendaftaran melalui Aplikasi Fastpedia. Pengguna diwajibkan mengisi data Nama sesuai dengan identitas diri, Email, NIK, Nomor Telepon, Nama Pengguna, dan Password.
+
+2.B Dengan mendaftar di Aplikasi Fastpedia, pengguna telah menyetujui semua kebijakan yang telah ditetapkan oleh developer Aplikasi Fastpedia
+
+2.C Perubahan data hanya untuk memperbaharui informasi sesuai dengan akurasi data yang dimiliki pengguna. Perubahan data hanya bisa dilakukan untuk perubahan data Email, Nomor Telepon, dan Password.
+
+2.D Pengguna dilarang untuk mengungkapkan informasi login kepada pihak ketiga atau manapun. Developer Aplikasi Fastpedia tidak pernah meminta informasi data login pengguna melalui media cetak maupun elektronik
+
+2.E Pengguna dilarang untuk memperjual belikan akun kepada pihak ketiga atau pihak manapun.
+
+
+3. Ketentuan Penggunaan Aplikasi
+3.A Fastpedia memberikan beberapa layanan, diantaranya Mining Ads, History, Wallet, dan Transfer Scan Barcode.
+
+3.B Layanan tersebut dapat berubah dari waktu ke waktu, selama developer aplikasi memperbaharui, memperbaiki, memodifikasi, dan menambahkan fitur pada Aplikasi Fastpedia.
+
+3.C Pengguna dapat menggunakan layanan tersebut ketika pengguna telah berhasil dan terdaftar pada Aplikasi Fastpedia.
+
+3.D Pengguna wajib menginformasikan kepada kami, jika pengguna tidak lagi memiliki kontrol terhadap akun Aplikasi Fastpedia, atau terkait peretasan (Hack Acccount), sehingga kami dapat membekukan akun pengguna sampai benar-benar kami memverifikasi kebenaran akun yang dimiliki.
+
+3. EPada fitur Mining Ads, anda diwajibkan Menonton dan Men-Subcribe pengguna lainnya. Pengguna akan diminta untuk melakukan login akun Youtube.
+
+3.F Login akun Youtube telah kami buat secara penghubungan langsung antara Youtube dengan Pengguna
+
+3.G Pengguna telah mengatahui, bahwa Developer Aplikasi tidak pernah mengetahui segala aktifitas Akun Youtube pengguna setelah melakukan Login Akun Youtube yang dilakukan pada Aplikasi Fastpedia.
+
+
+4. Tanggung Jawab
+4.A Pengguna bertanggung jawab atas segala aktifitas pada Aplikasi Fastpedia, meskipun akun tersebut disalahgunakan oleh orang lain
+
+4.B Pengguna bertanggung jawab atas akurasi data yang di isi oleh pengguna, pada "Form Register" Aplikasi Fastpedia.
+
+4.C Pengguna bertanggung jawab atas kelangsungan aktivasi akun yang terhubung dengan pihak ketiga pada aplikasi Fastpedia
+
+5. Ganti Rugi
+5.A Dengan melakukan pendaftaran pada Aplikasi Fastpedia, pengguna telah mengetahui dan menyetujui bahwa Developer Aplikasi Fastpedia tidak bertanggung jawab terhadap aktivasi dan pemblokiran akun Youtube diluar kendali Developer Aplikasi Fastpedia.
                   """,
             title: "Syarat dan Ketentuan!",
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.start,
             positiveText: 'Setuju',
             positiveAction: () {
               doRegister();
@@ -296,7 +279,7 @@ I/flutter (32573): tidaaaaaak
       textInputAction: TextInputAction.next,
       secret: false,
       hintText: 'Input your username',
-      icon: Icon(Icons.person),
+      icon: Icon(Icons.person, color: Colors.white,),
       width: 80,
       label: 'username',
       onChanged: (val) => validation(type: TypeField.username, value: val),
@@ -316,7 +299,7 @@ I/flutter (32573): tidaaaaaak
       textInputAction: TextInputAction.done,
       secret: true,
       hintText: 'Input Your password',
-      icon: Icon(Icons.lock),
+      icon: Icon(Icons.lock, color: Colors.white,),
       width: 80,
       label: 'password',
       onChanged: (val) => validation(type: TypeField.password, value: val),
@@ -356,7 +339,7 @@ I/flutter (32573): tidaaaaaak
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         FlatButton(
-          child: Icon(Icons.arrow_back),
+          child: Icon(Icons.arrow_back, color: Colors.white,),
           onPressed: () {
             setState(() {
               _isActive = false;
@@ -373,9 +356,9 @@ I/flutter (32573): tidaaaaaak
         FlatButton(
           child: Text(_isLogin ? 'Login' : 'Register',
             style: TextStyle(
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w700,
                 fontSize: 20,
-                color: Colors.black
+                color: Colors.white
             ),
           ),
         ),
@@ -389,12 +372,13 @@ I/flutter (32573): tidaaaaaak
           child: Text(
             _isLogin ? 'Login' : 'Register',
             style: TextStyle(
-                fontSize: 26,
-                color: Colors.white
+                fontSize: 16,
+                color: Hexcolor("#4EC24C"),
+                letterSpacing: 0.3
             ),
           ),
           padding: EdgeInsets.all(8.0),
-          color: Hexcolor("#34DE34"),
+          color: Hexcolor("#FFFFFF"),
           splashColor: Colors.green,
           animationDuration: Duration(seconds: 1),
           shape: RoundedRectangleBorder(
@@ -415,7 +399,10 @@ I/flutter (32573): tidaaaaaak
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            usernameField,
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: usernameField,
+            ),
             Padding(
               padding: EdgeInsets.only(top: 10.0),
               child: passwordField,
@@ -437,6 +424,40 @@ I/flutter (32573): tidaaaaaak
         ),
         Expanded(
           child: loginOrRegister,
+        ),
+        Padding(
+          padding: EdgeInsets.only(bottom: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Belum mempunyai akun?",
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w300
+                ),
+              ),
+              FlatButton(
+                child: Text(
+                  "Register Sekarang",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline
+                  ),
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isLogin = false;
+                    _isActive = true;
+                  });
+                  FocusScope.of(context).requestFocus(_focusName);
+                },
+              )
+            ],
+          ),
         )
       ],
     );
@@ -453,7 +474,10 @@ I/flutter (32573): tidaaaaaak
       label: 'name',
       hintText: 'masukan nama anda',
       width: 80,
-      icon: Icon(Icons.person),
+      icon: Icon(
+        Icons.person,
+        color: Colors.white,
+      ),
       secret: false,
       onFiledSubmitted: (val) {
         _focusName.unfocus();
@@ -475,7 +499,10 @@ I/flutter (32573): tidaaaaaak
       label: 'email',
       hintText: 'masukan email anda',
       width: 80,
-      icon: Icon(Icons.email),
+      icon: Icon(
+        Icons.email,
+        color: Colors.white,
+      ),
       secret: false,
       onFiledSubmitted: (val) {
         _focusEmail.unfocus();
@@ -496,7 +523,10 @@ I/flutter (32573): tidaaaaaak
       focusNode: _focusNIK,
       label: 'NIK',
       width: 80,
-      icon: Icon(Icons.verified_user),
+      icon: Icon(
+        MaterialCommunityIcons.file_document_outline,
+        color: Colors.white,
+      ),
       secret: false,
       onFiledSubmitted: (val) {
         _focusNIK.unfocus();
@@ -517,7 +547,10 @@ I/flutter (32573): tidaaaaaak
       focusNode: _focusHP,
       label: 'phone number',
       width: 80,
-      icon: Icon(Icons.phone),
+      icon: Icon(
+        Icons.phone_android,
+        color: Colors.white,
+      ),
       secret: false,
       onFiledSubmitted: (val) {
         _focusHP.unfocus();
@@ -591,18 +624,19 @@ I/flutter (32573): tidaaaaaak
               "Login",
               style: TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 20
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  letterSpacing: 0.3
               ),
             ),
             padding: EdgeInsets.all(8),
             textColor: Colors.white,
-            color: Hexcolor("#34DE34"),
+            color: Hexcolor("#4EC24C"),
             splashColor: Colors.green,
             animationDuration: Duration(seconds: 1),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: Hexcolor("#34DE34"))
+                side: BorderSide(color: Hexcolor("#FFFFFF"), width: 3)
             ),
             onPressed: () {
               setState(() {
@@ -620,18 +654,19 @@ I/flutter (32573): tidaaaaaak
             child: Text(
               "Register",
               style: TextStyle(
-                  color: Hexcolor("#34DE34"),
+                  color: Hexcolor("#4EC24C"),
                   fontWeight: FontWeight.w900,
-                  fontSize: 20
+                  fontSize: 16,
+                  letterSpacing: 0.3
               ),
             ),
             padding: EdgeInsets.all(8),
-            color: Hexcolor("#F2FFF2"),
+            color: Hexcolor("#FFFFFF"),
             splashColor: Colors.green,
             animationDuration: Duration(seconds: 1),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: Hexcolor("#34DE34"))
+                side: BorderSide(color: Hexcolor("#4EC24C"))
             ),
             onPressed: () {
               setState(() {
@@ -651,7 +686,7 @@ I/flutter (32573): tidaaaaaak
       child: _isActive ? _isLogin ? loginFields : registerFields : buttonLoginRegister,
       width: Responsive.width(100, context),
       decoration: BoxDecoration(
-          color: Hexcolor("#F2FFF2"),
+          color: Hexcolor("#4EC24C"),
           borderRadius: new BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30)
@@ -663,21 +698,30 @@ I/flutter (32573): tidaaaaaak
       duration: Duration(seconds: 1),
       padding: EdgeInsets.only(bottom: _isActive ? MediaQuery.of(context).viewInsets.bottom : 0),
       curve: Curves.ease,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(50.0),
-              child: Image(image: AssetImage('Fast-logo.png'),),
-            ),
-            flex: _isActive ? 1 : 3,
+      child: Stack(
+        children: [
+          Image(
+            image: AssetImage('bg-login.png'),
+            height: Responsive.height(100, context),
+            width: Responsive.width(100, context),
+            fit: BoxFit.cover,
           ),
-          Expanded(
-              flex: _isActive ? _isLogin ? 1 : 3 : 1,
-              child: fields
-          ),
-        ],
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(50.0),
+                  child: Image(image: AssetImage('Fast-logo.png'),),
+                ),
+                flex: _isActive ? 1 : 3,
+              ),
+              Expanded(
+                  flex: _isActive ? _isLogin ? 1 : 3 : 1,
+                  child: fields
+              ),
+            ],
+          )],
       ),
     );
 

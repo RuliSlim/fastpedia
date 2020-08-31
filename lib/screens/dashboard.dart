@@ -57,24 +57,26 @@ class _DashboardState extends State<Dashboard> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
+            child: AutoSizeText(
               _adsPoint != null ? Delimiters(_adsPoint).pointDelimiters() : "0.0",
               style: TextStyle(
-                  fontSize: 30,
                   color: Colors.white
               ),
+              maxFontSize: 30,
+              minFontSize: 20,
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Text(
+                AutoSizeText(
                   "ADS POINT",
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30
                   ),
+                  maxFontSize: 30,
+                  minFontSize: 20,
                 ),
               ],
             ),
@@ -95,24 +97,26 @@ class _DashboardState extends State<Dashboard> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
+            child: AutoSizeText(
               _voucher != null ? Delimiters(_voucher).pointDelimiters() : "0.0",
               style: TextStyle(
-                  fontSize: 30,
                   color: Colors.white
               ),
+              maxFontSize: 30,
+              minFontSize: 20,
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Text(
+                AutoSizeText(
                   "VOUCHER",
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30
                   ),
+                  maxFontSize: 30,
+                  minFontSize: 20,
                 )
               ],
             ),
@@ -137,9 +141,10 @@ class _DashboardState extends State<Dashboard> {
               _pedPoint != null ? Delimiters(_pedPoint).pointDelimiters() : "0.0",
               maxLines: 1,
               style: TextStyle(
-                  fontSize: 30,
                   color: Colors.white
               ),
+              maxFontSize: 30,
+              minFontSize: 20,
             ),
           ),
           Padding(
@@ -151,8 +156,9 @@ class _DashboardState extends State<Dashboard> {
                   maxLines: 1,
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30
                   ),
+                  maxFontSize: 30,
+                  minFontSize: 20,
                 )
               ],
             ),
@@ -165,13 +171,14 @@ class _DashboardState extends State<Dashboard> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         FlatButton(
-          child: Text(
+          child: AutoSizeText(
             "Points",
             style: TextStyle(
-                fontSize: 26,
                 fontWeight: FontWeight.w900,
                 color: Hexcolor("#1E3B2A")
             ),
+            maxFontSize: 20,
+            minFontSize: 16,
           ),
           onPressed: () => setState(() => _isActive = !_isActive),
         ),

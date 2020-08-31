@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:commons/commons.dart';
 import 'package:fastpedia/components/custom_textfield.dart';
 import 'package:fastpedia/main.dart';
@@ -46,6 +47,8 @@ class _LoginPage extends State<LoginPage> {
   FocusNode _focusNIK = new FocusNode();
   FocusNode _focusHP = new FocusNode();
 
+  bool _keyboardVisible = false;
+
   @override
   void initState() {
     super.initState();
@@ -83,6 +86,7 @@ class _LoginPage extends State<LoginPage> {
     WebService webService = Provider.of<WebService>(context);
 
     // methods
+    _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
 
     // function register call
     var doRegister = () {
@@ -416,7 +420,7 @@ digunakan oleh masyarakat umum.
       ),
     );
 
-    Column loginFields = Column(
+    final Column loginFields = Column(
       children: <Widget>[
         Padding(
           padding: EdgeInsets.only(top: 5),
@@ -425,28 +429,30 @@ digunakan oleh masyarakat umum.
         Expanded(
           child: loginOrRegister,
         ),
-        Padding(
-          padding: EdgeInsets.only(bottom: 20),
+        Visibility(
+          visible: !_keyboardVisible,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              AutoSizeText(
                 "Belum mempunyai akun?",
                 style: TextStyle(
-                    fontSize: 16,
                     color: Colors.white,
                     fontWeight: FontWeight.w300
                 ),
+                maxFontSize: 16,
+                minFontSize: 10,
               ),
               FlatButton(
-                child: Text(
+                child: AutoSizeText(
                   "Register Sekarang",
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
                       fontWeight: FontWeight.w700,
                       decoration: TextDecoration.underline
                   ),
+                  maxFontSize: 16,
+                  minFontSize: 10,
                 ),
                 onPressed: () {
                   setState(() {

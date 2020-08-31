@@ -197,7 +197,7 @@ class _ProfileState extends State<Profile> {
         ),
         Container(
           width: Responsive.width(100, context),
-          height: Responsive.height(10, context),
+          height: Responsive.height(7, context),
           color: Hexcolor("#F6FAF5"),
         ),
       ],
@@ -206,11 +206,11 @@ class _ProfileState extends State<Profile> {
     //final Container
 
     Container profilePicture = Container(
-        width: Responsive.width(100, context),
+        width: Responsive.width(90, context),
         height: Responsive.height(15, context),
         child: Card(
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(15.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
@@ -347,12 +347,15 @@ class _ProfileState extends State<Profile> {
     );
 
     final Container cards = Container(
-        width: Responsive.width(80, context),
+        width: Responsive.width(90, context),
         child: Column(
           children: [
             buttonToChangePassword,
             termsAndCondition,
-            logoutButton
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: logoutButton,
+            )
           ],
         )
     );
@@ -535,19 +538,22 @@ class _ProfileState extends State<Profile> {
         )
     );
 
-    final Container infoFields = Container(
-      width: Responsive.width(100, context),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget> [
-          nikField,
-          emailField,
-          noHPField,
-        ],
+    final Card infoFields = Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget> [
+            nikField,
+            emailField,
+            noHPField,
+          ],
+        ),
       ),
     );
 
-    final Card containerFields = Card(
+    final Container containerFields = Container(
+      width: Responsive.width(90, context),
       child: infoFields,
     );
 
@@ -584,16 +590,17 @@ class _ProfileState extends State<Profile> {
                 headerProfile,
                 Positioned(
                   top: Responsive.height(2, context),
+                  left: Responsive.width(5, context),
                   child: profilePicture,
                 ),
               ]
           ),
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(5.0),
             child: containerFields,
           ),
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(5.0),
             child: cards,
           ),
         ],

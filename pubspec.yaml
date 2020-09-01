@@ -40,6 +40,8 @@ dependencies:
   hexcolor: ^1.0.4
   flutter_icons: ^1.1.0
   auto_size_text: ^2.1.0
+  qr_flutter: ^3.2.0
+  path_provider: ^1.6.14
 
 # keyboard_attachable: ^1.0.3
 #  qr_flutter: ^3.2.0

@@ -200,9 +200,7 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
         child: WatchVideo(onTimeAndSubSuccess: onTimeAndSubSuccess, onNextVideo: onNextVideo),
       ),
       Container(
-        child: Center(
-          child: Image(image: AssetImage("coming-soon.jpg"),),
-        ),
+        child: ScreenScanner()
       ),
       Container(
         child: History(),

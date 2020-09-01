@@ -252,7 +252,7 @@ digunakan oleh masyarakat umum.
         switch (type) {
           case TypeField.username:
             _username = value;
-            _usernameValidation = _username.length >= 6 ? false : true;
+            _usernameValidation = _isLogin ? _username.length >= 3 ? false : true : _username.length >= 6 ? false : true;
             break;
           case TypeField.password:
             _password = value;
@@ -295,7 +295,7 @@ digunakan oleh masyarakat umum.
       },
       textCapitalization: TextCapitalization.characters,
       keyboardType: TextInputType.text,
-      errorMessage: 'username at least 6 char',
+      errorMessage: 'username at least ${_isLogin ? '3' : '6'} char',
       isError: _usernameValidation,
     );
 
@@ -718,7 +718,7 @@ digunakan oleh masyarakat umum.
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(50.0),
-                  child: Image(image: AssetImage('Fast-logo.png'),),
+                  child: Image(image: AssetImage('fast-logo-fix.png'),),
                 ),
                 flex: _isActive ? 1 : 3,
               ),

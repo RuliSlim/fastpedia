@@ -209,6 +209,7 @@ class _ProfileState extends State<Profile> {
         width: Responsive.width(90, context),
         height: Responsive.height(15, context),
         child: Card(
+          elevation: 5,
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: Row(
@@ -244,13 +245,11 @@ class _ProfileState extends State<Profile> {
     );
 
     Card buttonToChangePassword = Card(
+      elevation: 5,
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () {
-          setState(() {
-            _changePassword = true;
-          });
-          widget.toChangePassword();
+          Navigator.pushNamed(context, "/change-detail", arguments: {"type": "password"});
         },
         child: Padding(
           padding: const EdgeInsets.all(30.0),
@@ -282,6 +281,7 @@ class _ProfileState extends State<Profile> {
     );
 
     Card termsAndCondition = Card(
+      elevation: 5,
       child: Padding(
         padding: const EdgeInsets.all(30.0),
         child: Row(
@@ -311,6 +311,7 @@ class _ProfileState extends State<Profile> {
     );
 
     Card logoutButton = Card(
+        elevation: 5,
         child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
@@ -539,6 +540,7 @@ class _ProfileState extends State<Profile> {
     );
 
     final Card infoFields = Card(
+      elevation: 5,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(

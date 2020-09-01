@@ -1,6 +1,7 @@
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/screens/dashboard.dart';
 import 'package:fastpedia/screens/discover_video.dart';
+import 'package:fastpedia/screens/history.dart';
 import 'package:fastpedia/screens/profile.dart';
 import 'package:fastpedia/screens/qr_scanner.dart';
 import 'package:flashy_tab_bar/flashy_tab_bar.dart';
@@ -34,6 +35,14 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
+    final  Map<String, Object> receiveData = ModalRoute.of(context).settings.arguments;
+
+    if (receiveData != null && receiveData["type"] == "profile") {
+      setState(() {
+        _selectedIndex = 4;
+      });
+    }
+
     // Method
     void onPressedTabBar (int value) {
       setState(() {
@@ -44,7 +53,7 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
             break;
           case 1: {
             titleAppBar = 'Discover';
-            isShown = false;
+            isShown = true;
           }
           break;
           case 2: {
@@ -179,7 +188,7 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
 
     void onNextVideo () {
       setState(() {
-        isShown = false;
+        isShown = true;
       });
     }
 
@@ -196,9 +205,7 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
         ),
       ),
       Container(
-        child: Center(
-          child: Image(image: AssetImage("coming-soon.jpg"),),
-        ),
+        child: History(),
       ),
       Container(
         child: Profile(toChangePassword: toChangePassword, backToProfile: backToProfile, changePassword: changePassword),

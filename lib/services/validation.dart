@@ -10,7 +10,7 @@ bool validateEmail({String email}) {
 }
 
 bool validateNIK({String nik}) {
-  RegExp pattern = RegExp(r"^[0-9]{16,22}$");
+  RegExp pattern = RegExp(r"^[0-9]{16}$");
   return !pattern.hasMatch(nik);
 }
 

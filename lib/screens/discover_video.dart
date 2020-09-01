@@ -28,6 +28,7 @@ class _WatchVideoState extends State<WatchVideo> {
   // States
   String _urlVideo;
   bool _isDone = false;
+  bool _isShowRating = false;
 
   // appWebViewControoler
   InAppWebViewController _inAppWebViewController;
@@ -61,7 +62,7 @@ class _WatchVideoState extends State<WatchVideo> {
 
   // countdown timer;
   Timer _timerCheck;
-  int _time = 10;
+  int _time = 300;
   bool _isDoneLoadWeb = false;
   bool _isPlayingVideo = false;
   
@@ -112,13 +113,14 @@ class _WatchVideoState extends State<WatchVideo> {
       Map<String, dynamic> response = await webService.getVideo();
       _status = response['status'];
 
+
       if (_status) {
         _dataVideo = response['data'];
 
         setState(() {
           _urlVideo = _dataVideo.data.video;
           _isDone = false;
-          _time = 10;
+          _time = 300;
         });
 
         if (_timerCheck != null) {
@@ -251,46 +253,56 @@ class _WatchVideoState extends State<WatchVideo> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text("Tinggalkan Review",
-                  style: TextStyle(
-                      color: Hexcolor("#1E3B2A"),
-                      fontWeight: FontWeight.w900,
-                      fontSize: 20
+                FlatButton(
+                  child: Text("Tinggalkan Review",
+                    style: TextStyle(
+                        color: Hexcolor("#1E3B2A"),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 20
+                    ),
                   ),
+                  onPressed: () {
+                    setState(() {
+                      _isShowRating = !_isShowRating;
+                    });
+                  },
                 )
               ],
             ),
           ),
-          Expanded(
-            flex: 3,
-            child: Container(
-              width: Responsive.width(80, context),
-              padding: EdgeInsets.only(
-                  left: 20,
-                  right: 20
-              ),
-              decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(
-                          color: Colors.white,
-                          width: 3
-                      )
-                  )
-              ),
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: starRating,
+          Visibility(
+            visible: _isShowRating,
+            child: Expanded(
+              flex: 3,
+              child: Container(
+                width: Responsive.width(80, context),
+                padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20
+                ),
+                decoration: BoxDecoration(
+                    border: Border(
+                        top: BorderSide(
+                            color: Colors.white,
+                            width: 3
+                        )
+                    )
+                ),
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: starRating,
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: comments,
-                  )
-                ],
+                    Expanded(
+                      flex: 2,
+                      child: comments,
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -304,12 +316,12 @@ class _WatchVideoState extends State<WatchVideo> {
             body: Column(
               children: <Widget>[
                 Expanded(
-                  flex: 4,
+                  flex: _isShowRating ? 4 : 10,
                   child: inAppwebView,
                 ),
                 Expanded(
                   flex: 1,
-                  child: containerReview,
+                  child:containerReview,
                 )
               ],
             ),

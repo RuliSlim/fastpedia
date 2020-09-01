@@ -1,5 +1,6 @@
 import 'package:fastpedia/main.dart';
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class CustomTextFields extends StatefulWidget {
   final TextInputAction textInputAction;
@@ -14,6 +15,7 @@ class CustomTextFields extends StatefulWidget {
   final TextInputType keyboardType;
   final TextCapitalization textCapitalization;
   final TextEditingController controller;
+  final String borderColor;
   String errorMessage;
   bool secret;
   bool isHidePassword;
@@ -42,7 +44,8 @@ class CustomTextFields extends StatefulWidget {
     this.autoFocus,
     this.isHidePassword = false,
     this.initialValue,
-    this.readOnly = false
+    this.readOnly = false,
+    this.borderColor
   });
 
   @override
@@ -75,7 +78,7 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
             suffixIcon: widget.label == "password" || widget.label == "password lama" || widget.label == "password baru" ? GestureDetector(
               child: Icon(
                 widget.isHidePassword ? Icons.visibility_off : Icons.visibility,
-                color: Colors.white,
+                color: widget.borderColor != null ? Hexcolor(widget.borderColor) : Colors.white,
               ),
               onTap: () {
                 setState(() {
@@ -86,13 +89,13 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
             ) : null,
             labelText: widget.label,
             labelStyle: TextStyle(
-              color: Colors.white
+              color: widget.borderColor != null ? Hexcolor(widget.borderColor) : Colors.white
             ),
             border: new OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide(
                   style: BorderStyle.solid,
-                  color: Colors.white,
+                  color: widget.borderColor != null ? Hexcolor(widget.borderColor) : Colors.white,
                   width: 3
               ),
             ),
@@ -100,7 +103,7 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide(
                 style: BorderStyle.solid,
-                color: Colors.white,
+                color: widget.borderColor != null ? Hexcolor(widget.borderColor) : Colors.white,
                 width: 3
               )
             ),
@@ -108,7 +111,7 @@ class _CustomTextFieldsState extends State<CustomTextFields> {
                 borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(
                     style: BorderStyle.solid,
-                    color: Colors.white,
+                    color: widget.borderColor != null ? Hexcolor(widget.borderColor) : Colors.white,
                     width: 3
                 )
             ),

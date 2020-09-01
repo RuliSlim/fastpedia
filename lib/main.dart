@@ -1,4 +1,5 @@
 import 'package:fastpedia/model/user.dart';
+import 'package:fastpedia/screens/ChangeProfile.dart';
 import 'package:fastpedia/screens/home.dart';
 import 'package:fastpedia/screens/login_screen.dart';
 import 'package:fastpedia/services/user_preferences.dart';
@@ -66,7 +67,8 @@ class _MyApp extends State<MyApp> {
         ),
         routes: {
           '/login': (context) => LoginPage(),
-          '/home': (context) => HomePage()
+          '/home': (context) => HomePage(),
+          '/change-detail': (context) => ChangeProfile(),
         },
       ),
     );

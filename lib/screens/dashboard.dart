@@ -231,7 +231,7 @@ class _DashboardState extends State<Dashboard> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(50.0),
-              child: Image(image: AssetImage('Fast-logo.png'),),
+              child: Image(image: AssetImage('fast-logo-fix.png'),),
             ),
             box
           ],

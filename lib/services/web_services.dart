@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:fastpedia/model/error_handling.dart';
+import 'package:fastpedia/model/history.dart';
 import 'package:fastpedia/model/points.dart';
 import 'package:fastpedia/model/user.dart';
 import 'package:fastpedia/model/video.dart';
@@ -29,6 +30,7 @@ class WebService with ChangeNotifier {
   static const pointUrl = "$baseUrl/data-point/";
   static const videosUrl = "$baseUrl/bank-video/";
   static const saveVideoUrl = "$baseUrl/watch-video-to-convert-ads-point/";
+  static const historyUrl = "$baseUrl/history-watched/";
 
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredStatus = Status.NotRegistered;
@@ -308,8 +310,11 @@ class WebService with ChangeNotifier {
       final responseData = response.data;
       final DataVideo dataVideo = DataVideo.fromJson(responseData);
 
+      print([dataVideo.data.video, dataVideo.data.id, dataVideo.sisa_nonton, dataVideo.sudah_ditonton, dataVideo.sisa_video_di_bank, dataVideo.jatah_nonton, "<<<<<<<<<<<<<>SGSAFSAS"]);
+
       result = {'status': true, "data": dataVideo};
     } on DioError catch (e) {
+      print([e.response.data, "<<<<<<<<<<<<<<<<"]);
       if (e.response.statusCode == 404 || e.response.statusCode == 400) {
         final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
 
@@ -356,6 +361,41 @@ class WebService with ChangeNotifier {
 
         result = {'status': false, 'message': error.message};
       } else {
+        result = {'status': false, 'message': 'Server is on maintenance'};
+      }
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> getHistory() async {
+    var result;
+    try {
+      final token = await UserPreferences().getToken();
+
+      final response = await dio.get(
+          historyUrl,
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': 'Token $token'
+            },
+          )
+      );
+
+      final responseData = response.data;
+
+      final HistoryUser historyUser = HistoryUser.fromJson(responseData);
+      final List<HistoryPoint> historyPoint = historyUser.data_poin;
+      final List<HistoryVideo> historyVideo = historyUser.data_video;
+
+      result = {'status': true, "dataVideo": historyVideo, "dataPoint": historyPoint};
+    } on DioError catch (e) {
+      if (e.response.statusCode == 404 || e.response.statusCode == 400) {
+        final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
+
+        result = {'status': false, 'message': error.message};
+      } else {
+
         result = {'status': false, 'message': 'Server is on maintenance'};
       }
     }

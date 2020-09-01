@@ -43,6 +43,12 @@ class _ScreenScanner extends State<ScreenScanner> {
               padding: EdgeInsets.all(20),
               child: QrImage(
                 data: _username != null ? _username : "",
+                size: 400,
+                gapless: false,
+                embeddedImage: AssetImage('fast-logo.jpg'),
+                embeddedImageStyle: QrEmbeddedImageStyle(
+                  size: Size(80, 80),
+                ),
               ),
             ),
             Padding(

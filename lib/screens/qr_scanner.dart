@@ -1,15 +1,15 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/user.dart';
 import 'package:fastpedia/services/user_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class ScreenScanner extends StatefulWidget {
@@ -28,12 +28,42 @@ class _ScreenScanner extends State<ScreenScanner> {
   @override
   void initState() {
     super.initState();
+    getUsername();
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+
+    final ButtonTheme scanButton = ButtonTheme(
+        minWidth: Responsive.width(90, context),
+        height: Responsive.width(15, context),
+        child: RaisedButton(
+          child: AutoSizeText("Scan QR Code",
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              color: Colors.white
+            ),
+            maxFontSize: 30,
+            minFontSize: 20,
+          ),
+          onPressed: () {
+            scan();
+          },
+          padding: EdgeInsets.all(8),
+          textColor: Colors.white,
+          color: Hexcolor("#4EC24C"),
+          splashColor: Colors.green,
+          animationDuration: Duration(seconds: 1),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(color: Hexcolor("#4EC24C"))
+          ),
+        )
+    );
+
     return Scaffold(
+      backgroundColor: Hexcolor("#F6FAF5"),
       body: new Center(
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -41,55 +71,45 @@ class _ScreenScanner extends State<ScreenScanner> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.all(20),
-              child: QrImage(
-                data: _username != null ? _username : "",
-                size: 400,
-                gapless: false,
-                embeddedImage: AssetImage('fast-logo.jpg'),
-                embeddedImageStyle: QrEmbeddedImageStyle(
-                  size: Size(80, 80),
-                ),
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: new BorderRadius.circular(20),
+                    child: Image(
+                      image: AssetImage("qr_bg.png"),
+                      height: Responsive.height(50, context),
+                      width: Responsive.width(100, context),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(50.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: new BorderRadius.circular(20),
+                        color: Colors.white
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: QrImage(
+                            data: _username != null ? _username : "",
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: RaisedButton(
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  splashColor: Colors.blueGrey,
-                  onPressed: scan,
-                  child: const Text('START CAMERA SCAN')
-              ),
-            )
-            ,
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Text(barCode, textAlign: TextAlign.center,),
-            )
-            ,
+              child: scanButton,
+            ),
           ],
         ),
       ),
     );
-  }
-
-  Future<void> _captureAndSharePng() async {
-    try {
-      RenderRepaintBoundary boundary = globalKey.currentContext.findRenderObject();
-      var image = await boundary.toImage();
-      ByteData byteData = await image.toByteData(format: ImageByteFormat.png);
-      Uint8List pngBytes = byteData.buffer.asUint8List();
-
-      final tempDir = await getTemporaryDirectory();
-      final file = await new File('${tempDir.path}/image.png').create();
-      await file.writeAsBytes(pngBytes);
-
-      final channel = const MethodChannel('channel:me.alfian.share/share');
-      channel.invokeMethod('shareFile', 'image.png');
-
-    } catch(e) {
-      print(e.toString());
-    }
   }
 
   Future<void> getUsername () async {
@@ -102,10 +122,13 @@ class _ScreenScanner extends State<ScreenScanner> {
   Future scan() async {
     try {
       ScanResult barCode = await BarcodeScanner.scan();
-      print([barCode, "<<<<<<SAGFSAGSAGSAGSA"]);
       setState(() {
-        this.barCode = barCode.toString();
+        this.barCode = barCode.rawContent;
       });
+
+      if (barCode.type == ResultType.Barcode) {
+        Navigator.pushNamed(context, "/transfer", arguments: {"username": this.barCode.toUpperCase()});
+      }
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.cameraAccessDenied) {
         setState(() {

@@ -199,21 +199,14 @@ class _CustomTextFieldsStateSecondary extends State<CustomTextFieldsSecondary> {
         initialValue: widget.initialValue != null ? widget.initialValue : null,
         readOnly: widget.readOnly ? widget.readOnly : false,
         style: TextStyle(
-          fontSize: Responsive.width(4, context)
+          fontSize: Responsive.width(4, context),
+          color: Hexcolor("#4EC24C")
         ),
         decoration: InputDecoration(
             prefixIcon: widget.icon,
             errorMaxLines: 5,
             suffixIcon: widget.suffixButton != null ? widget.suffixButton : null,
             labelText: widget.label,
-            focusedBorder: !widget.readOnly ? new OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(
-                    style: BorderStyle.solid,
-                    color: Colors.green,
-                    width: 3
-                )
-            ) : null,
             hintStyle: TextStyle(
               color: Colors.red,
               fontSize: 12,

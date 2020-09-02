@@ -310,11 +310,8 @@ class WebService with ChangeNotifier {
       final responseData = response.data;
       final DataVideo dataVideo = DataVideo.fromJson(responseData);
 
-      print([dataVideo.data.video, dataVideo.data.id, dataVideo.sisa_nonton, dataVideo.sudah_ditonton, dataVideo.sisa_video_di_bank, dataVideo.jatah_nonton, "<<<<<<<<<<<<<>SGSAFSAS"]);
-
       result = {'status': true, "data": dataVideo};
     } on DioError catch (e) {
-      print([e.response.data, "<<<<<<<<<<<<<<<<"]);
       if (e.response.statusCode == 404 || e.response.statusCode == 400) {
         final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
 
@@ -388,8 +385,6 @@ class WebService with ChangeNotifier {
       final List<HistoryPoint> historyPoint = historyUser.data_poin;
       final List<HistoryVideo> historyVideo = historyUser.data_video;
 
-      print([responseData, "<<<<<<<<S?FSFS"]);
-
       result = {'status': true, "dataVideo": historyVideo, "dataPoint": historyPoint};
     } on DioError catch (e) {
       if (e.response.statusCode == 404 || e.response.statusCode == 400) {
@@ -399,6 +394,45 @@ class WebService with ChangeNotifier {
       } else {
 
         result = {'status': false, 'message': 'Server is on maintenance'};
+      }
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> transfer({String nominal, String tipe, String receiver, String password}) async {
+    var result;
+    try {
+      final token = await UserPreferences().getToken();
+      final username = await UserPreferences().getUser();
+
+      final Map<String, dynamic> transferData = {
+        'sender': username.id,
+        "nominal": nominal,
+        "tipe": tipe,
+        "receiver_name": receiver,
+        "password": password
+      };
+
+      final response = await dio.post(
+          "$baseUrl/create-transaction/",
+          data: jsonEncode(transferData),
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': 'Token $token'
+            },
+          )
+      );
+
+      final responseData = response.data;
+
+      result = {'status': true, "data": "Berhasil"};
+    } on DioError catch (e) {
+      final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
+      if (e.response.statusCode == 404 || e.response.statusCode == 400) {
+        result = {'status': false, 'message': error.message};
+      } else {
+        result = {'status': false, 'message': error.message};
       }
     }
     return result;

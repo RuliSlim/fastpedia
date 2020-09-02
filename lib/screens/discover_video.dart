@@ -92,6 +92,10 @@ class _WatchVideoState extends State<WatchVideo> {
 
   void checkIfPlay() {
     const oneSec = Duration(seconds: 1);
+    if (_timerCheck != null) {
+      _timerCheck.cancel();
+    }
+
     _timerCheck = new Timer.periodic(oneSec, (timer) {
       if (_isDoneLoadWeb && _time >= 1) {
         var player = _inAppWebViewController.evaluateJavascript(source: 'document.getElementById("movie_player").classList.contains("playing-mode");');
@@ -146,6 +150,9 @@ class _WatchVideoState extends State<WatchVideo> {
   void initState() {
     super.initState();
     getData();
+    if (_timerCheck != null) {
+      _timerCheck.cancel();
+    }
   }
 
   @override

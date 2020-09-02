@@ -385,6 +385,8 @@ class WebService with ChangeNotifier {
       final List<HistoryPoint> historyPoint = historyUser.data_poin;
       final List<HistoryVideo> historyVideo = historyUser.data_video;
 
+      print([responseData["data_poin"], "<<<<<<<<<FSAD"]);
+
       result = {'status': true, "dataVideo": historyVideo, "dataPoint": historyPoint};
     } on DioError catch (e) {
       if (e.response.statusCode == 404 || e.response.statusCode == 400) {

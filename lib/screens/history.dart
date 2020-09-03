@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:commons/commons.dart';
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/history.dart';
 import 'package:fastpedia/services/web_services.dart';
@@ -16,6 +17,9 @@ class History extends StatefulWidget {
 class _History extends State<History> {
   List<HistoryVideo> historyVideo;
   List<HistoryPoint> historyPoint;
+  List<HistoryKeluar> historyKeluar;
+
+  List<String> category = ["Riwayat Nonton", "Riwayat Transaksi Masuk", "Riwayat Transaksi Keluar"];
 
   void getData() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
@@ -24,6 +28,7 @@ class _History extends State<History> {
       setState(() {
         historyVideo = response['dataVideo'];
         historyPoint = response['dataPoint'];
+        historyKeluar = response['dataKeluar'];
       });
     });
   }
@@ -85,9 +90,7 @@ class _History extends State<History> {
     // TODO: implement build
     if (historyPoint == null) {
       return Scaffold(
-        body: Center(
-          child: containerCard,
-        ),
+        body: loadingScreen(context, loadingType: LoadingType.JUMPING)
       );
     } else {
       return Scaffold(
@@ -99,9 +102,9 @@ class _History extends State<History> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                for (var i in historyPoint) Padding(
+                for (var i in category) Padding(
                   padding: EdgeInsets.all(5),
-                  child: createCard(date: i.created_at, point: i.poin_mining),
+                  child: createCategory(title: i),
                 )
               ],
             ),
@@ -109,6 +112,47 @@ class _History extends State<History> {
         ),
       );
     }
+  }
+
+  Container createCategory ({String title}) {
+    return Container(
+      width: Responsive.width(90, context),
+      height: Responsive.height(15, context),
+      child: Card(
+        child: InkWell(
+          onTap: () {
+            if(title.contains("keluar")) {
+              Navigator.pushNamed(context, "/history_keluar", arguments: {'data': historyKeluar});
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AutoSizeText(
+                      title,
+                      maxFontSize: 50,
+                      minFontSize: 30,
+                    ),
+                    AutoSizeText(
+                      "Lihat detail $title",
+                      maxFontSize: 20,
+                      minFontSize: 10,
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Container createCard ({double point, String date}) {

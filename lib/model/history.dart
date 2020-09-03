@@ -36,21 +36,53 @@ class HistoryPoint {
   }
 }
 
+class HistoryKeluar {
+  int id;
+  int sender;
+  double nominal;
+  String receiver_name;
+  String created_at;
+  String tipe;
+  String receiver_username;
+  String sender_username;
+
+  HistoryKeluar({this.id, this.tipe, this.nominal, this.created_at, this.receiver_name, this.receiver_username, this.sender, this.sender_username});
+
+  factory HistoryKeluar.fromJson(Map<String, dynamic> json) {
+    return HistoryKeluar(
+      id: json['id'],
+      tipe: json['json'],
+      nominal: json['nominal'],
+      created_at: json['created_at'],
+      receiver_name: json['receiver_name'],
+      receiver_username: json['receiver_username'],
+      sender: json['sender'],
+      sender_username: json['sender_username']
+    );
+  }
+}
+
 class HistoryUser {
   List<HistoryPoint> data_poin;
   List<HistoryVideo> data_video;
+  List<HistoryKeluar> data_keluar;
 
-  HistoryUser({this.data_poin, this.data_video});
+  HistoryUser({this.data_poin, this.data_video, this.data_keluar});
 
   factory HistoryUser.fromJson(Map<String, dynamic> json) {
     var listVideo = json['data_video'] as List;
     List<HistoryVideo> historyVideo = listVideo.map((i) => HistoryVideo.fromJson(i)).toList();
+
     var listPoint = json['data_poin'] as List;
     List<HistoryPoint> historyPoin = listPoint.map((i) => HistoryPoint.fromJson(i)).toList();
 
+    var listKeluar = json['data_keluar'] as List;
+    List<HistoryKeluar> historyKeluar = listKeluar.map((i) => HistoryKeluar.fromJson(i)).toList();
+
     return HistoryUser(
       data_video: historyVideo,
-      data_poin: historyPoin
+      data_poin: historyPoin,
+      data_keluar: historyKeluar
     );
   }
 }

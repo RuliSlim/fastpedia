@@ -72,7 +72,8 @@ class _MyApp extends State<MyApp> {
           '/home': (context) => HomePage(),
           '/change-detail': (context) => ChangeProfile(),
           '/transfer': (context) => Transfer(),
-          '/history-masuk': (context) => HistoryMasuk()
+          '/history-masuk': (context) => HistoryMasuk(),
+          '/history-keluar': (context) => History
         },
       ),
     );

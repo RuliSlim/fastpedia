@@ -384,10 +384,11 @@ class WebService with ChangeNotifier {
       final HistoryUser historyUser = HistoryUser.fromJson(responseData);
       final List<HistoryPoint> historyPoint = historyUser.data_poin;
       final List<HistoryVideo> historyVideo = historyUser.data_video;
+      final List<HistoryKeluar> historyKeluar = historyUser.data_keluar;
 
       print([responseData["data_poin"], "<<<<<<<<<FSAD"]);
 
-      result = {'status': true, "dataVideo": historyVideo, "dataPoint": historyPoint};
+      result = {'status': true, "dataVideo": historyVideo, "dataPoint": historyPoint, "dataKeluar": historyKeluar};
     } on DioError catch (e) {
       if (e.response.statusCode == 404 || e.response.statusCode == 400) {
         final ErrorHandling error = ErrorHandling.fromJson(e.response.data);

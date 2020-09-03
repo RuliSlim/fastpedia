@@ -2,6 +2,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:commons/commons.dart';
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/history.dart';
+import 'package:fastpedia/screens/history_keluar.dart';
+import 'package:fastpedia/services/number_extension.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +20,7 @@ class _History extends State<History> {
   List<HistoryVideo> historyVideo;
   List<HistoryPoint> historyPoint;
   List<HistoryKeluar> historyKeluar;
+  List<HistoryKeluar> historyMasuk;
 
   List<String> category = ["Riwayat Nonton", "Riwayat Transaksi Masuk", "Riwayat Transaksi Keluar"];
 
@@ -29,6 +32,7 @@ class _History extends State<History> {
         historyVideo = response['dataVideo'];
         historyPoint = response['dataPoint'];
         historyKeluar = response['dataKeluar'];
+        historyMasuk = response['dataMasuk'];
       });
     });
   }
@@ -121,8 +125,21 @@ class _History extends State<History> {
       child: Card(
         child: InkWell(
           onTap: () {
-            if(title.contains("keluar")) {
-              Navigator.pushNamed(context, "/history_keluar", arguments: {'data': historyKeluar});
+            if(title.contains("Keluar")) {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (BuildContext context) => new ScreenHistoryKeluar(historyKeluar: historyKeluar, type: "Keluar",)));
+            }
+
+            if(title.contains("Masuk")) {
+              Navigator.push(context, MaterialPageRoute(
+                  builder: (BuildContext context) => new ScreenHistoryKeluar(historyKeluar: historyMasuk, type: "Masuk")
+              ));
+            }
+
+            if (title.contains("Nonton")) {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (BuildContext context) => new ScreenHistoryKeluar(historyPoint: historyPoint, type: "Nonton")
+              ));
             }
           },
           child: Padding(
@@ -182,7 +199,7 @@ class _History extends State<History> {
                     children: <Widget>[
                       Icon(MaterialCommunityIcons.calendar),
                       AutoSizeText(
-                        date,
+                        ParseDate(date).parseDate(),
                         maxFontSize: 20,
                         minFontSize: 10,
                       )

@@ -20,3 +20,12 @@ extension Delimiters on double {
     return this.toStringAsFixed(1);
   }
 }
+
+extension ParseDate on String {
+  String parseDate() {
+    String year = this.substring(2, 4);
+    String month = this.substring(5, 7);
+
+    return year + "/" + month;
+  }
+}

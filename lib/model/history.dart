@@ -51,9 +51,9 @@ class HistoryKeluar {
   factory HistoryKeluar.fromJson(Map<String, dynamic> json) {
     return HistoryKeluar(
       id: json['id'],
-      tipe: json['json'],
+      tipe: json['tipe'],
       nominal: json['nominal'],
-      created_at: json['created_at'],
+      created_at: json['created'],
       receiver_name: json['receiver_name'],
       receiver_username: json['receiver_username'],
       sender: json['sender'],
@@ -66,8 +66,9 @@ class HistoryUser {
   List<HistoryPoint> data_poin;
   List<HistoryVideo> data_video;
   List<HistoryKeluar> data_keluar;
+  List<HistoryKeluar> data_masuk;
 
-  HistoryUser({this.data_poin, this.data_video, this.data_keluar});
+  HistoryUser({this.data_poin, this.data_video, this.data_masuk, this.data_keluar});
 
   factory HistoryUser.fromJson(Map<String, dynamic> json) {
     var listVideo = json['data_video'] as List;
@@ -76,13 +77,17 @@ class HistoryUser {
     var listPoint = json['data_poin'] as List;
     List<HistoryPoint> historyPoin = listPoint.map((i) => HistoryPoint.fromJson(i)).toList();
 
-    var listKeluar = json['data_keluar'] as List;
+    var listKeluar = json['transaksi_keluar'] as List;
     List<HistoryKeluar> historyKeluar = listKeluar.map((i) => HistoryKeluar.fromJson(i)).toList();
+
+    var listMasuk = json['transaksi_masuk'] as List;
+    List<HistoryKeluar> historyMasuk = listMasuk.map((i) => HistoryKeluar.fromJson(i)).toList();
 
     return HistoryUser(
       data_video: historyVideo,
       data_poin: historyPoin,
-      data_keluar: historyKeluar
+      data_keluar: historyKeluar,
+      data_masuk: historyMasuk
     );
   }
 }

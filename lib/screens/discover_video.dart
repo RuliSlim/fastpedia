@@ -1,8 +1,6 @@
 import 'package:commons/commons.dart';
 import 'package:fastpedia/main.dart';
-import 'package:fastpedia/model/user.dart';
 import 'package:fastpedia/model/video.dart';
-import 'package:fastpedia/services/user_preferences.dart';
 import 'package:fastpedia/services/web_services.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +27,7 @@ class _WatchVideoState extends State<WatchVideo> {
   String _urlVideo;
   bool _isDone = false;
   bool _isShowRating = false;
+  bool _hasSubmit = false;
 
   // appWebViewControoler
   InAppWebViewController _inAppWebViewController;
@@ -84,6 +83,7 @@ class _WatchVideoState extends State<WatchVideo> {
           _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("button.icon-button")[3].style.display="none";');
         }
       });
+
       setState(() {
         _time -= 1;
       });
@@ -125,6 +125,7 @@ class _WatchVideoState extends State<WatchVideo> {
           _urlVideo = _dataVideo.data.video;
           _isDone = false;
           _time = 300;
+          _hasSubmit = false;
         });
 
         if (_timerCheck != null) {
@@ -354,11 +355,15 @@ class _WatchVideoState extends State<WatchVideo> {
     if (_time > 0) {
       return _countDown();
     }
-    if (_isDone && _time < 1 && _dataVideo.sisa_nonton >= 1) {
+
+    if (_isDone && _time < 1 && _dataVideo.sisa_nonton >= 1 && _hasSubmit) {
       return _nextVideoButton();
-    } else {
+    }
+
+    if (!_hasSubmit && _time < 1) {
       return _subsAction();
     }
+
   }
 
   FloatingActionButton _countDown() {
@@ -389,9 +394,8 @@ class _WatchVideoState extends State<WatchVideo> {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
               WebService webService = Provider.of<WebService>(context, listen: false);
               Map<String, dynamic> response = await webService.saveVideo(idVideo: _dataVideo.data.id, rating: _rating);
-              _status = response['status'];
               Flushbar(
-                title: 'Congrats!',
+                title: response['status'] ? 'Congrats!' : 'Failed',
                 message: response['message'],
                 duration: Duration(seconds: 3),
               ).show(context);
@@ -400,6 +404,7 @@ class _WatchVideoState extends State<WatchVideo> {
             widget.onTimeAndSubSuccess();
             setState(() {
               _isDone = true;
+              _hasSubmit = true;
             });
           }
         });
@@ -426,14 +431,23 @@ class _WatchVideoState extends State<WatchVideo> {
   }
 
   // method
-  void modifyDom() {
-    _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[2].style.display="none";');
-    _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[3].style.display="none";');
-    _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".mobile-topbar-header.cbox")[0].style.display="none";');
-    _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("ytm-comment-section-renderer.scwnr-content")[0].style.display="none";');
-    _inAppWebViewController.evaluateJavascript(source: 'var parent = document.getElementsByTagName("ytm-slim-owner-renderer")[0]; '
+  void modifyDom() async {
+    await _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[2].style.display="none";');
+    await _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".scwnr-content")[3].style.display="none";');
+    await _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll(".mobile-topbar-header.cbox")[0].style.display="none";');
+    await _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("ytm-comment-section-renderer.scwnr-content")[0].style.display="none";');
+    await _inAppWebViewController.evaluateJavascript(source: 'var parent = document.getElementsByTagName("ytm-slim-owner-renderer")[0]; '
         'var child = parent.getElementsByTagName("a");'
         'child[0].removeAttribute("href");'
     );
+    double _duration = await _inAppWebViewController.evaluateJavascript(source: 'document.querySelector(".video-stream").getDuration()');
+
+    setState(() {
+      if (_duration > 300) {
+        _time = 297;
+      } else {
+        _time = _duration.floor() - 3;
+      }
+    });
   }
 }

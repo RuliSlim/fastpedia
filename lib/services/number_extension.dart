@@ -28,4 +28,9 @@ extension ParseDate on String {
 
     return year + "/" + month;
   }
+
+  String capital() {
+    String result = this[0].toUpperCase();
+    return result + this.substring(1, this.length);
+  }
 }

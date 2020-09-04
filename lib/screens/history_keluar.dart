@@ -38,7 +38,7 @@ class _ScreenHistoryKeluar extends State<ScreenHistoryKeluar> {
       trans = Column(
         children: [
           for (var i in historyKeluar) createCard(
-              title: i.tipe,
+              title: i.tipe == "evoucher" ? "Voucher" : ParseDate(i.tipe).capital(),
               point: i.nominal,
               date: i.created_at,
               username: type == "Masuk" ? i.sender_username : i.receiver_username
@@ -65,7 +65,7 @@ class _ScreenHistoryKeluar extends State<ScreenHistoryKeluar> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            "Transaki $type",
+            type == "Nonton" ? "Riwayat Nonton" : "Riwayat Transaki $type",
             style: TextStyle(
                 color: Hexcolor("#FFFFFF"),
                 fontSize: 20,

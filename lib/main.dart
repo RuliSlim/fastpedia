@@ -1,6 +1,5 @@
 import 'package:fastpedia/model/user.dart';
-import 'package:fastpedia/screens/ChangeProfile.dart';
-import 'package:fastpedia/screens/HistoryMasuk.dart';
+import 'package:fastpedia/screens/change_profile.dart';
 import 'package:fastpedia/screens/history_keluar.dart';
 import 'package:fastpedia/screens/home.dart';
 import 'package:fastpedia/screens/login_screen.dart';
@@ -73,7 +72,6 @@ class _MyApp extends State<MyApp> {
           '/home': (context) => HomePage(),
           '/change-detail': (context) => ChangeProfile(),
           '/transfer': (context) => Transfer(),
-          '/history-masuk': (context) => HistoryMasuk(),
         },
       ),
     );

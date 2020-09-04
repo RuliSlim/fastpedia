@@ -21,7 +21,7 @@ enum Status {
 
 class WebService with ChangeNotifier {
   var dio = new Dio();
-  //static const baseUrl = "http://192.168.100.11:8000/fast-mobile";
+  //static const baseUrl = "http://192.168.2.108:8000/fast-mobile";
   static const baseUrl = "https://backend-evo.herokuapp.com/fast-mobile";
   static const loginUrl = "$baseUrl/login/";
   static const registerUrl = "$baseUrl/register-mobile/";
@@ -310,6 +310,7 @@ class WebService with ChangeNotifier {
       final responseData = response.data;
       final DataVideo dataVideo = DataVideo.fromJson(responseData);
 
+
       result = {'status': true, "data": dataVideo};
     } on DioError catch (e) {
       if (e.response.statusCode == 404 || e.response.statusCode == 400) {
@@ -386,8 +387,6 @@ class WebService with ChangeNotifier {
       final List<HistoryVideo> historyVideo = historyUser.data_video;
       final List<HistoryKeluar> historyKeluar = historyUser.data_keluar;
       final List<HistoryKeluar> historyMasuk = historyUser.data_masuk;
-
-      print([responseData["transaksi_masuk"], "<<<<<<<<<FSAD"]);
 
       result = {'status': true, "dataVideo": historyVideo, "dataPoint": historyPoint, "dataKeluar": historyKeluar, "dataMasuk": historyMasuk};
     } on DioError catch (e) {

@@ -45,52 +45,6 @@ class _History extends State<History> {
 
   @override
   Widget build(BuildContext context) {
-
-    final Container containerCard = Container(
-      width: Responsive.width(90, context),
-      height: Responsive.height(15, context),
-      child: Card(
-        elevation: 5,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 10, right: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  AutoSizeText(
-                    "Reward Point",
-                    maxFontSize: 50,
-                    minFontSize: 30,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(MaterialCommunityIcons.calendar),
-                      AutoSizeText(
-                        "date",
-                        maxFontSize: 20,
-                        minFontSize: 10,
-                      )
-                    ],
-                  )
-                ],
-              ),
-              AutoSizeText(
-                "0",
-                maxFontSize: 50,
-                minFontSize: 30,
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-
     // TODO: implement build
     if (historyPoint == null) {
       return Scaffold(
@@ -123,6 +77,7 @@ class _History extends State<History> {
       width: Responsive.width(90, context),
       height: Responsive.height(15, context),
       child: Card(
+        elevation: 5,
         child: InkWell(
           onTap: () {
             if(title.contains("Keluar")) {

@@ -6,6 +6,7 @@ import 'package:fastpedia/components/custom_textfield.dart';
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/enums.dart';
 import 'package:fastpedia/model/user.dart';
+import 'package:fastpedia/screens/syarat.dart';
 import 'package:fastpedia/services/user_preferences.dart';
 import 'package:fastpedia/services/validation.dart';
 import 'package:fastpedia/services/web_services.dart';
@@ -282,30 +283,38 @@ class _ProfileState extends State<Profile> {
 
     Card termsAndCondition = Card(
       elevation: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
-              child: Icon(
-                MaterialIcons.pages,
-                size: 20,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: AutoSizeText(
-                'Syarat & Ketentuan',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w900,
+      child: InkWell(
+        splashColor: Colors.blue.withAlpha(30),
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(
+              builder: (BuildContext context) => new Syarat()
+          ));
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                child: Icon(
+                  MaterialIcons.pages,
+                  size: 20,
                 ),
-                maxFontSize: 20,
-                minFontSize: 10,
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: AutoSizeText(
+                  'Syarat & Ketentuan',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                  ),
+                  maxFontSize: 20,
+                  minFontSize: 10,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

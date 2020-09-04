@@ -45,182 +45,63 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
 
-    final adsPointContainer = Container(
-      width: Responsive.width(80, context),
-      decoration: BoxDecoration(
-          color: Hexcolor("#34DE34"),
-          borderRadius: new BorderRadius.all(Radius.circular(10))
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AutoSizeText(
-              _adsPoint != null ? Delimiters(_adsPoint).pointDelimiters() : "0.0",
-              style: TextStyle(
-                  color: Colors.white
-              ),
-              maxFontSize: 30,
-              minFontSize: 20,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                AutoSizeText(
-                  "ADS POINT",
-                  style: TextStyle(
-                      color: Colors.white,
-                  ),
-                  maxFontSize: 30,
-                  minFontSize: 20,
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-
-    final voucherContainer = Container(
-      width: Responsive.width(80, context),
-      decoration: BoxDecoration(
-          color: Hexcolor("#34DE34"),
-          borderRadius: new BorderRadius.all(Radius.circular(10))
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AutoSizeText(
-              _voucher != null ? Delimiters(_voucher).pointDelimiters() : "0.0",
-              style: TextStyle(
-                  color: Colors.white
-              ),
-              maxFontSize: 30,
-              minFontSize: 20,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                AutoSizeText(
-                  "VOUCHER",
-                  style: TextStyle(
-                      color: Colors.white,
-                  ),
-                  maxFontSize: 30,
-                  minFontSize: 20,
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-
-    final pedsContainer = Container(
-      width: Responsive.width(80, context),
-      decoration: BoxDecoration(
-          color: Hexcolor("#34DE34"),
-          borderRadius: new BorderRadius.all(Radius.circular(10))
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AutoSizeText(
-              _pedPoint != null ? Delimiters(_pedPoint).pointDelimiters() : "0.0",
-              maxLines: 1,
-              style: TextStyle(
-                  color: Colors.white
-              ),
-              maxFontSize: 30,
-              minFontSize: 20,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                AutoSizeText(
-                  "PEDS POINT",
-                  maxLines: 1,
-                  style: TextStyle(
-                      color: Colors.white,
-                  ),
-                  maxFontSize: 30,
-                  minFontSize: 20,
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-
-    final buttonWallet = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    final Column adsPoin = Column(
       children: [
-        FlatButton(
-          child: AutoSizeText(
-            "Points",
-            style: TextStyle(
-                fontWeight: FontWeight.w900,
-                color: Hexcolor("#1E3B2A")
-            ),
-            maxFontSize: 20,
-            minFontSize: 16,
-          ),
-          onPressed: () => setState(() => _isActive = !_isActive),
+        Image(image: AssetImage('ads_poin.png'),),
+        AutoSizeText(
+          "ADS Point"
         ),
+        AutoSizeText(
+          _adsPoint != null ? _adsPoint.toStringAsFixed(2) : "0.0"
+        )
       ],
     );
 
-    final container = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    final Column voucher = Column(
       children: [
-        buttonWallet,
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Image(image: AssetImage('voucher_icon.png'),),
+        AutoSizeText(
+            "Voucher"
+        ),
+        AutoSizeText(
+            _voucher != null ? _voucher.toStringAsFixed(2) : "0.0"
+        )
+      ],
+    );
+
+    final Column pedPoint = Column(
+      children: [
+        Image(image: AssetImage('ped_poin_icon.png'),),
+        AutoSizeText(
+            "PED Point"
+        ),
+        AutoSizeText(
+            _pedPoint != null ? _pedPoint.toStringAsFixed(2) : "0.0"
+        )
+      ],
+    );
+
+    final Container wallet = Container(
+      child: Card(
+        elevation: 5,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: adsPointContainer,
+              child: adsPoin,
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: voucherContainer,
+              child: voucher,
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: pedsContainer,
+              child: pedPoint,
             )
           ],
         ),
-      ],
-    );
-
-    final box = AnimatedContainer(
-        duration: Duration(seconds: 3),
-        curve: Curves.ease,
-        width: Responsive.width(100, context),
-        decoration: BoxDecoration(
-            color: Hexcolor("#F2FFF2"),
-            borderRadius: new BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30)
-            )
-        ),
-        child: _isActive? container : buttonWallet
+      ),
     );
 
     return Scaffold(
@@ -229,15 +110,18 @@ class _DashboardState extends State<Dashboard> {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(50.0),
-              child: Image(image: AssetImage('fast-logo-fix.png'),),
+            Image(
+              image: AssetImage('banner_1.png'),
+              width: Responsive.width(100, context),
+              fit: BoxFit.cover,
             ),
-            box
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: wallet,
+            )
           ],
         ),
       ),
     );
   }
-
 }

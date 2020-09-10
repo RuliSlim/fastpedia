@@ -35,6 +35,9 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 android {
     compileSdkVersion 29
 
+    buildToolsVersion '29.0.0'
+
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -48,8 +51,9 @@ android {
         applicationId "com.rubixovt.fastpedia"
         minSdkVersion 18
         targetSdkVersion 29
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        versionCode 2
+        versionName "1.1.0"
+        multiDexEnabled true
     }
 
     signingConfigs {

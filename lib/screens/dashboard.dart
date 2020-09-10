@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fastpedia/main.dart';
 import 'package:fastpedia/model/points.dart';
 import 'package:fastpedia/services/web_services.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,10 +20,38 @@ class _DashboardState extends State<Dashboard> {
   // comps;
   bool _isActive = true;
 
-  @override
-  void initState() {
-    super.initState();
-    getData();
+  // ADMOB
+  BannerAd _bannerAdOne;
+  BannerAd _bannerAdTwo;
+
+  BannerAd buildBannerAd({String adId, double offset}) {
+    return BannerAd(
+        adUnitId: adId,
+        size: AdSize.largeBanner,
+        listener: (MobileAdEvent event) {
+          if (event == MobileAdEvent.loaded) {
+            _bannerAdOne..show(
+                anchorType: AnchorType.bottom,
+                anchorOffset: Responsive.height(offset, context)
+            );
+          }
+        }
+    );
+  }
+
+  BannerAd buildBannerAdTwo({String adId, double offset}) {
+    return BannerAd(
+        adUnitId: adId,
+        size: AdSize.largeBanner,
+        listener: (MobileAdEvent event) {
+          if (event == MobileAdEvent.loaded) {
+            _bannerAdTwo..show(
+                anchorType: AnchorType.bottom,
+                anchorOffset: Responsive.height(offset, context)
+            );
+          }
+        }
+    );
   }
 
   void getData() {
@@ -41,16 +70,33 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    getData();
+
+    FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
+    _bannerAdOne = buildBannerAd(offset: 8, adId: "ca-app-pub-7765292226849471/8403112391")..load();
+    _bannerAdTwo = buildBannerAdTwo(offset: 22, adId: "ca-app-pub-7765292226849471/9614275809")..load();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _bannerAdOne.dispose();
+    _bannerAdTwo.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     final Column adsPoin = Column(
       children: [
         Image(image: AssetImage('ads_poin.png'),),
         AutoSizeText(
-          "ADS Point"
+            "ADS Point"
         ),
         AutoSizeText(
-          _adsPoint != null ? _adsPoint.toStringAsFixed(2) : "0.0"
+            _adsPoint != null ? _adsPoint.toStringAsFixed(2) : "0.0"
         )
       ],
     );

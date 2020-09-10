@@ -256,7 +256,7 @@ digunakan oleh masyarakat umum.
             break;
           case TypeField.password:
             _password = value;
-            _passwordValidation = validatePassword(password: value);
+            _passwordValidation = _isLogin ? false : validatePassword(password: value);
             break;
           case TypeField.name:
             _name = value;
@@ -718,7 +718,10 @@ digunakan oleh masyarakat umum.
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(50.0),
-                  child: Image(image: AssetImage('fast-logo-fix.png'),),
+                  child: Image(
+                    image: AssetImage('logo_notext.png'),
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
                 flex: _isActive ? 1 : 3,
               ),

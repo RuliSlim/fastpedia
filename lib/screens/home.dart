@@ -2,6 +2,7 @@ import 'package:fastpedia/main.dart';
 import 'package:fastpedia/screens/dashboard.dart';
 import 'package:fastpedia/screens/discover_video.dart';
 import 'package:fastpedia/screens/history.dart';
+import 'package:fastpedia/screens/menu_earn_point.dart';
 import 'package:fastpedia/screens/profile.dart';
 import 'package:fastpedia/screens/qr_scanner.dart';
 import 'package:flashy_tab_bar/flashy_tab_bar.dart';
@@ -197,7 +198,7 @@ class _HomeState extends State<HomePage>  with TickerProviderStateMixin{
         child: Dashboard(),
       ),
       Container(
-        child: WatchVideo(onTimeAndSubSuccess: onTimeAndSubSuccess, onNextVideo: onNextVideo),
+        child: MenuOnPoint(),
       ),
       Container(
         child: ScreenScanner()

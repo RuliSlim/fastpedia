@@ -13,18 +13,13 @@ import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 // Dashboard
 class WatchVideo extends StatefulWidget {
-  final VoidCallback onTimeAndSubSuccess;
-  final VoidCallback onNextVideo;
-
-  WatchVideo({Key key, this.onTimeAndSubSuccess, this.onNextVideo}) : super(key: key);
-
   @override
   _WatchVideoState createState() => _WatchVideoState();
 }
 
 class _WatchVideoState extends State<WatchVideo> {
   // States
-  String _urlVideo;
+  String _urlVideo = "";
   bool _isDone = false;
   bool _isShowRating = false;
   bool _hasSubmit = false;
@@ -75,6 +70,9 @@ class _WatchVideoState extends State<WatchVideo> {
   double _rating = 3.0;
   String _comments = "Cukup bagus!";
 
+  // state block sub
+  bool _viewed = false;
+
   void countDown() {
     if (_isPlayingVideo && _timerCheck.isActive) {
       var data = _inAppWebViewController.evaluateJavascript(source: 'document.querySelectorAll("button.icon-button").length');
@@ -87,6 +85,12 @@ class _WatchVideoState extends State<WatchVideo> {
       setState(() {
         _time -= 1;
       });
+
+      if (_time <= 0) {
+        setState(() {
+          _viewed = true;
+        });
+      }
     }
   }
 
@@ -194,6 +198,15 @@ class _WatchVideoState extends State<WatchVideo> {
             },
           ),
         ),
+        Positioned(
+          top: Responsive.height(49, context),
+          height: Responsive.height(_viewed ? 0 : 100, context),
+          width: Responsive.width(_viewed ? 0 : 100, context),
+          child: Container(
+            color: Colors.transparent,
+            height: Responsive.height(100, context),
+          ),
+        )
       ],
     );
 
@@ -336,7 +349,6 @@ class _WatchVideoState extends State<WatchVideo> {
             floatingActionButton: _containerButton(),
           );
       } else {
-        widget.onTimeAndSubSuccess();
         return Scaffold(
           body: Center(child: Text(_message)),
         );
@@ -352,30 +364,47 @@ class _WatchVideoState extends State<WatchVideo> {
   }
 
   dynamic _containerButton() {
-    if (_time > 0) {
+    if (!_viewed) {
       return _countDown();
     }
 
-    if (_isDone && _time < 1 && _dataVideo.sisa_nonton >= 1 && _hasSubmit) {
+    if (_isDone && _viewed && _dataVideo.sisa_nonton >= 1 && _hasSubmit) {
       return _nextVideoButton();
     }
 
-    if (!_hasSubmit && _time < 1) {
+    if (!_hasSubmit && _viewed) {
       return _subsAction();
     }
 
   }
 
-  FloatingActionButton _countDown() {
-    return FloatingActionButton(
-        onPressed: () async {
-          Flushbar(
-            title: 'Error',
-            message: 'You have to watch $_time s',
-            duration: Duration(seconds: 3),
-          ).show(context);
-        },
-        child: Text('$_time')
+  Row _countDown() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: Responsive.width(8, context)),
+          child: FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                _isLoading = true;
+              });
+              getData();
+            },
+            child: Icon(Icons.shuffle),
+          ),
+        ),
+        FloatingActionButton(
+            onPressed: () async {
+              Flushbar(
+                title: 'Error',
+                message: 'You have to watch $_time s',
+                duration: Duration(seconds: 3),
+              ).show(context);
+            },
+            child: Text('$_time')
+        ),
+      ],
     );
   }
 
@@ -399,9 +428,11 @@ class _WatchVideoState extends State<WatchVideo> {
                 message: response['message'],
                 duration: Duration(seconds: 3),
               ).show(context);
+              setState(() {
+                _viewed = true;
+              });
             });
 
-            widget.onTimeAndSubSuccess();
             setState(() {
               _isDone = true;
               _hasSubmit = true;
@@ -423,8 +454,9 @@ class _WatchVideoState extends State<WatchVideo> {
         ],
       ),
       onPressed: () {
-        _timerCheck.cancel();
-        widget.onNextVideo();
+        if (_timerCheck != null) {
+          _timerCheck.cancel();
+        }
         getData();
       },
     );
@@ -443,11 +475,7 @@ class _WatchVideoState extends State<WatchVideo> {
     double _duration = await _inAppWebViewController.evaluateJavascript(source: 'document.querySelector(".video-stream").getDuration()');
 
     setState(() {
-      if (_duration > 300) {
-        _time = 297;
-      } else {
-        _time = _duration.floor() - 3;
-      }
+      _time = _duration.floor() - 3;
     });
   }
 }

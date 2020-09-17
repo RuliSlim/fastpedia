@@ -56,4 +56,5 @@ class UserPreferences {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     return pref.getString('token');
   }
+
 }

@@ -21,14 +21,14 @@ enum Status {
 
 class WebService with ChangeNotifier {
   var dio = new Dio();
-  //static const baseUrl = "http://192.168.2.108:8000/fast-mobile";
+  //static const baseUrl = "http://192.168.2.104:8000/fast-mobile";
   static const baseUrl = "https://backend-evo.herokuapp.com/fast-mobile";
   static const loginUrl = "$baseUrl/login/";
   static const registerUrl = "$baseUrl/register-mobile/";
   static const updateUrl = "$baseUrl/update-user-mobile/";
   static const updatePasswordUrl = "$baseUrl/change-password-mobile/";
   static const pointUrl = "$baseUrl/data-point/";
-  static const videosUrl = "$baseUrl/bank-video/";
+  static const videosUrl = "$baseUrl/sumber-video/";
   static const saveVideoUrl = "$baseUrl/watch-video-to-convert-ads-point/";
   static const historyUrl = "$baseUrl/history-watched/";
 
@@ -309,10 +309,10 @@ class WebService with ChangeNotifier {
 
       final responseData = response.data;
       final DataVideo dataVideo = DataVideo.fromJson(responseData);
-
-
+      
       result = {'status': true, "data": dataVideo};
     } on DioError catch (e) {
+      
       if (e.response.statusCode == 404 || e.response.statusCode == 400) {
         final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
 

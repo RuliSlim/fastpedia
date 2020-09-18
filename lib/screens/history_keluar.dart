@@ -38,10 +38,10 @@ class _ScreenHistoryKeluar extends State<ScreenHistoryKeluar> {
       trans = Column(
         children: [
           for (var i in historyKeluar) createCard(
-              title: i.tipe == "evoucher" ? "Voucher" : ParseDate(i.tipe).capital(),
-              point: i.nominal,
-              date: i.created_at,
-              username: type == "Masuk" ? i.sender_username : i.receiver_username
+              title: i.tipe == "evoucher" ? "Voucher" : "Peds",
+              point: i.nominal ?? "",
+              date: i.created_at ?? "",
+              username: type == "Masuk" ? i.sender_username ?? "" : i.receiver_username ?? ""
           )
         ],
       );
@@ -77,7 +77,7 @@ class _ScreenHistoryKeluar extends State<ScreenHistoryKeluar> {
         ),
         body: SingleChildScrollView(
           child: Center(
-              child: type == "Masuk" || type == "Keluar" ? trans : nonton
+              child: type == "Masuk" || type == "Keluar" ? historyKeluar == null ? Text("Belum ada riwayat") : trans : nonton
           ),
         )
     );

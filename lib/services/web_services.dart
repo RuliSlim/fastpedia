@@ -388,11 +388,13 @@ class WebService with ChangeNotifier {
       final List<HistoryKeluar> historyKeluar = historyUser.data_keluar;
       final List<HistoryKeluar> historyMasuk = historyUser.data_masuk;
 
+      print(["masuk sini"]);
+
       result = {'status': true, "dataVideo": historyVideo, "dataPoint": historyPoint, "dataKeluar": historyKeluar, "dataMasuk": historyMasuk};
     } on DioError catch (e) {
+      print([e.response.data, "<<<<<<<<<<<<"]);
       if (e.response.statusCode == 404 || e.response.statusCode == 400) {
         final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
-
         result = {'status': false, 'message': error.message};
       } else {
 
@@ -412,7 +414,7 @@ class WebService with ChangeNotifier {
         'sender': username.id,
         "nominal": nominal,
         "tipe": tipe,
-        "receiver_name": receiver,
+        "receiver": receiver,
         "password": password
       };
 
@@ -432,6 +434,7 @@ class WebService with ChangeNotifier {
       result = {'status': true, "data": "Berhasil"};
     } on DioError catch (e) {
       final ErrorHandling error = ErrorHandling.fromJson(e.response.data);
+
       if (e.response.statusCode == 404 || e.response.statusCode == 400) {
         result = {'status': false, 'message': error.message};
       } else {

@@ -54,9 +54,9 @@ class HistoryKeluar {
       tipe: json['tipe'],
       nominal: json['nominal'],
       created_at: json['created'],
-      receiver_name: json['receiver_name'],
+      //receiver_name: json['receiver_name'],
       receiver_username: json['receiver_username'],
-      sender: json['sender'],
+      //sender: json['sender'],
       sender_username: json['sender_username']
     );
   }

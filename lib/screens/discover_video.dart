@@ -72,6 +72,7 @@ class _WatchVideoState extends State<WatchVideo> {
 
   // state block sub
   bool _viewed = false;
+  bool _viewedFinal = true;
 
   void countDown() {
     if (_isPlayingVideo && _timerCheck.isActive) {
@@ -130,6 +131,8 @@ class _WatchVideoState extends State<WatchVideo> {
           _isDone = false;
           _time = 300;
           _hasSubmit = false;
+          _viewed = false;
+          _viewedFinal = true;
         });
 
         if (_timerCheck != null) {
@@ -199,9 +202,9 @@ class _WatchVideoState extends State<WatchVideo> {
           ),
         ),
         Positioned(
-          top: Responsive.height(49, context),
-          height: Responsive.height(_viewed ? 0 : 100, context),
-          width: Responsive.width(_viewed ? 0 : 100, context),
+          top: Responsive.height(42, context),
+          height: Responsive.height(_viewedFinal ? _viewed ? 0 : 100 : 100, context),
+          width: Responsive.width(_viewedFinal ? _viewed ? 0 : 100 : 100, context),
           child: Container(
             color: Colors.transparent,
             height: Responsive.height(100, context),
@@ -388,6 +391,8 @@ class _WatchVideoState extends State<WatchVideo> {
             onPressed: () {
               setState(() {
                 _isLoading = true;
+                _viewed = false;
+                _viewedFinal = true;
               });
               getData();
             },
@@ -428,14 +433,12 @@ class _WatchVideoState extends State<WatchVideo> {
                 message: response['message'],
                 duration: Duration(seconds: 3),
               ).show(context);
-              setState(() {
-                _viewed = true;
-              });
             });
 
             setState(() {
               _isDone = true;
               _hasSubmit = true;
+              _viewedFinal = false;
             });
           }
         });

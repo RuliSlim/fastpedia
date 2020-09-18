@@ -23,16 +23,21 @@ class _History extends State<History> {
   List<HistoryKeluar> historyMasuk;
 
   List<String> category = ["Riwayat Nonton", "Riwayat Transaksi Masuk", "Riwayat Transaksi Keluar"];
+  String _errorMessage;
 
   void getData() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       WebService webService = Provider.of<WebService>(context, listen: false);
       Map<String, dynamic> response = await webService.getHistory();
       setState(() {
-        historyVideo = response['dataVideo'];
-        historyPoint = response['dataPoint'];
-        historyKeluar = response['dataKeluar'];
-        historyMasuk = response['dataMasuk'];
+        if (response['status']) {
+          historyVideo = response['dataVideo'];
+          historyPoint = response['dataPoint'];
+          historyKeluar = response['dataKeluar'];
+          historyMasuk = response['dataMasuk'];
+        } else {
+          _errorMessage = response['message'];
+        }
       });
     });
   }
@@ -46,9 +51,11 @@ class _History extends State<History> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    if (historyPoint == null) {
+    if (_errorMessage != null) {
       return Scaffold(
-        body: loadingScreen(context, loadingType: LoadingType.JUMPING)
+        body: Center(
+          child: Text(_errorMessage),
+        )
       );
     } else {
       return Scaffold(
